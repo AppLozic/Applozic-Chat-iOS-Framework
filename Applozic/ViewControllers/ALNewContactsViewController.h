@@ -25,6 +25,7 @@
 
 -(void)addNewMembertoGroup:(ALContact *)alcontact withCompletion:(void(^)(NSError *error,ALAPIResponse *response))completion;
 -(void)chatWithOneUserSelected:(NSString *)userId;
+-(void)channelCreated:(ALChannel *)alChannel;
 
 @end
 
