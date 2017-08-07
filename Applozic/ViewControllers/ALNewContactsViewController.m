@@ -961,29 +961,6 @@
     BOOL isForBroadCast = [self.forGroup isEqualToNumber:[NSNumber numberWithInt:BROADCAST_GROUP_CREATION]];
     
     [self turnUserInteractivityForNavigationAndTableView:NO];
-    //check whether at least two memebers selected
-    if(self.groupMembers.count < 2 && !isForBroadCast)
-    {
-        [self turnUserInteractivityForNavigationAndTableView:YES];
-        UIAlertController *alertController = [UIAlertController
-                                              alertControllerWithTitle:@"Group Members"
-                                              message:@"Please select minimum two members"
-                                              preferredStyle:UIAlertControllerStyleAlert];
-        
-        [ALUtilityClass setAlertControllerFrame:alertController andViewController:self];
-        
-        UIAlertAction *okAction = [UIAlertAction
-                                   actionWithTitle:NSLocalizedString(@"OK", @"OK action")
-                                   style:UIAlertActionStyleDefault
-                                   handler:^(UIAlertAction *action)
-                                   {
-                                       NSLog(@"OK action");
-                                   }];
-        [alertController addAction:okAction];
-        [self presentViewController:alertController animated:YES completion:nil];
-        return;
-        
-    }
     
     //Server Call
     self.creatingChannel = [[ALChannelService alloc] init];
