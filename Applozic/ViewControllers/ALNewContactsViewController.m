@@ -962,6 +962,29 @@
     
     [self turnUserInteractivityForNavigationAndTableView:NO];
     
+    if(self.groupMembers.count < 1 && !isForBroadCast)
+    {
+        [self turnUserInteractivityForNavigationAndTableView:YES];
+        UIAlertController *alertController = [UIAlertController
+                                              alertControllerWithTitle:@"Group Members"
+                                              message:@"Please select at least one member"
+                                              preferredStyle:UIAlertControllerStyleAlert];
+        
+        [ALUtilityClass setAlertControllerFrame:alertController andViewController:self];
+        
+        UIAlertAction *okAction = [UIAlertAction
+                                   actionWithTitle:NSLocalizedString(@"OK", @"OK action")
+                                   style:UIAlertActionStyleDefault
+                                   handler:^(UIAlertAction *action)
+                                   {
+                                       NSLog(@"OK action");
+                                   }];
+        [alertController addAction:okAction];
+        [self presentViewController:alertController animated:YES completion:nil];
+        return;
+        
+    }
+    
     //Server Call
     self.creatingChannel = [[ALChannelService alloc] init];
     NSMutableArray * memberList = [NSMutableArray arrayWithArray:self.groupMembers.allObjects];
