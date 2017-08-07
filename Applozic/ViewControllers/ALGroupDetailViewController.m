@@ -860,7 +860,7 @@
     grpUpdate.isViewForUpdatingGroup = YES;
     grpUpdate.channelKey = self.channelKeyID;
     grpUpdate.grpInfoDelegate = self;
-    grpUpdate.channelName = self.alChannel.name;
+    grpUpdate.channelName = self.displayedGroupName;
     grpUpdate.groupImageURL = self.alChannel.channelImageURL;
     [self.navigationController pushViewController:grpUpdate animated:YES];
 }
