@@ -16,6 +16,7 @@
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic) NSString * memberIdToAdd;
 @property (strong,nonatomic) NSMutableArray * lastSeenMembersArray;
+@property (strong,nonatomic) NSString * displayedGroupName;
 
 @property (strong,nonatomic)UIViewController * alChatViewController;
 

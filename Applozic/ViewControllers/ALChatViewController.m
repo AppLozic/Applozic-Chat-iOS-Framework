@@ -975,7 +975,8 @@
     self.navigationItem.titleView = titleLabelButton;
     
     CGFloat COORDINATE_POINT_Y = titleLabelButton.frame.size.height - 17;
-    [self.label setFrame: CGRectMake(0, COORDINATE_POINT_Y ,self.navigationController.navigationBar.frame.size.width, 20)];
+//    [self.label setFrame: CGRectMake(0, COORDINATE_POINT_Y ,self.navigationController.navigationBar.frame.size.width, 20)];
+    [self.label setHidden:YES];
 
     ALUserDetail *userDetail = [[ALUserDetail alloc] init];
     userDetail.connected = self.alContact.connected;

@@ -1054,39 +1054,36 @@
     }
     else
     {
-        [self.creatingChannel createChannel:self.groupName orClientChannelKey:nil andMembersList:memberList andImageLink:self.groupImageURL
-                             withCompletion:^(ALChannel *alChannel, NSError *error) {
-                                 
-                                 if(alChannel)
-                                 {
-                                     //Updating view, popping to MessageList View
-                                     NSMutableArray *allViewControllers = [NSMutableArray arrayWithArray:[self.navigationController viewControllers]];
-                                     
-                                     for (UIViewController *aViewController in allViewControllers)
-                                     {
-                                         if ([ALPushAssist isViewObjIsMsgVC:aViewController])
-                                         {
-                                             ALMessagesViewController * messageVC = (ALMessagesViewController *)aViewController;
-                                             [messageVC insertChannelMessage:alChannel.key];
-                                             [self.navigationController popToViewController:aViewController animated:YES];
-                                         }
-                                         else if ([ALPushAssist isViewObjIsMsgContainerVC:aViewController])
-                                         {
-                                             ALSubViewController * msgSubView = aViewController;
-                                             [msgSubView.msgView insertChannelMessage:alChannel.key];
-                                             [self.navigationController popToViewController:aViewController animated:YES];
-                                         }
-                                     }
-                                 }
-                                 else
-                                 {
-                                     [TSMessage showNotificationWithTitle:@"Unable to create group. Please try again" type:TSMessageNotificationTypeError];
-                                     [self turnUserInteractivityForNavigationAndTableView:YES];
-                                 }
-                                 
-                                 [[self activityIndicator] stopAnimating];
-                                 
-                             }];
+        [self.creatingChannel createChannel:self.groupName orClientChannelKey:nil andMembersList:memberList andImageLink:self.groupImageURL channelType:PRIVATE andMetaData:self.groupMetadata withCompletion:^(ALChannel *alChannel, NSError *error) {
+            if(alChannel)
+            {
+                //Updating view, popping to MessageList View
+                NSMutableArray *allViewControllers = [NSMutableArray arrayWithArray:[self.navigationController viewControllers]];
+                
+                for (UIViewController *aViewController in allViewControllers)
+                {
+                    if ([ALPushAssist isViewObjIsMsgVC:aViewController])
+                    {
+                        ALMessagesViewController * messageVC = (ALMessagesViewController *)aViewController;
+                        [messageVC insertChannelMessage:alChannel.key];
+                        [self.navigationController popToViewController:aViewController animated:YES];
+                    }
+                    else if ([ALPushAssist isViewObjIsMsgContainerVC:aViewController])
+                    {
+                        ALSubViewController * msgSubView = aViewController;
+                        [msgSubView.msgView insertChannelMessage:alChannel.key];
+                        [self.navigationController popToViewController:aViewController animated:YES];
+                    }
+                }
+            }
+            else
+            {
+                [TSMessage showNotificationWithTitle:@"Unable to create group. Please try again" type:TSMessageNotificationTypeError];
+                [self turnUserInteractivityForNavigationAndTableView:YES];
+            }
+            
+            [[self activityIndicator] stopAnimating];
+        }];
     }
     if(![ALDataNetworkConnection checkDataNetworkAvailable])
     {

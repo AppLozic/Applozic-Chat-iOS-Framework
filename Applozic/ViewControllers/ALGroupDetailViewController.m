@@ -654,7 +654,12 @@
                 if(indexPath.row == 0)
                 {
                     [self.memberNameLabel setFont:[UIFont boldSystemFontOfSize:18]];
-                    self.memberNameLabel.text = [NSString stringWithFormat:@"%@", self.groupName];
+                    if (self.displayedGroupName) {
+                        self.memberNameLabel.text = self.displayedGroupName;
+                    } else {
+                        self.memberNameLabel.text = [NSString stringWithFormat:@"%@", self.groupName];
+                    }
+
                 }
                 else if(indexPath.row==1)
                 {

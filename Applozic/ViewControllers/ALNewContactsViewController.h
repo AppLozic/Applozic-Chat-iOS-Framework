@@ -37,6 +37,7 @@
 @property (nonatomic, strong) NSNumber* forGroup;
 @property (nonatomic, strong) UIBarButtonItem *done;
 @property (nonatomic, strong) NSString* groupName;
+@property (nonatomic, strong) NSMutableDictionary* groupMetadata;
 @property (nonatomic, strong) NSString * groupImageURL;
 @property (nonatomic, strong) NSNumber * forGroupAddition;
 @property (nonatomic, strong) NSMutableArray * contactsInGroup;
