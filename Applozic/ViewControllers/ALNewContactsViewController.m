@@ -985,6 +985,12 @@
         
     }
     
+    if (self.groupMembers.count == 1) {
+        NSString * userId = self.groupMembers.allObjects[0];
+        [delegate chatWithOneUserSelected:userId];
+        return;
+    }
+    
     //Server Call
     self.creatingChannel = [[ALChannelService alloc] init];
     NSMutableArray * memberList = [NSMutableArray arrayWithArray:self.groupMembers.allObjects];
