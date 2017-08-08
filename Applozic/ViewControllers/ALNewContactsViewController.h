@@ -24,6 +24,8 @@
 @optional
 
 -(void)addNewMembertoGroup:(ALContact *)alcontact withCompletion:(void(^)(NSError *error,ALAPIResponse *response))completion;
+-(void)chatWithOneUserSelected:(NSString *)userId;
+-(void)channelCreated:(ALChannel *)alChannel;
 
 @end
 
@@ -37,6 +39,7 @@
 @property (nonatomic, strong) NSNumber* forGroup;
 @property (nonatomic, strong) UIBarButtonItem *done;
 @property (nonatomic, strong) NSString* groupName;
+@property (nonatomic, strong) NSMutableDictionary* groupMetadata;
 @property (nonatomic, strong) NSString * groupImageURL;
 @property (nonatomic, strong) NSNumber * forGroupAddition;
 @property (nonatomic, strong) NSMutableArray * contactsInGroup;

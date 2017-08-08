@@ -654,7 +654,12 @@
                 if(indexPath.row == 0)
                 {
                     [self.memberNameLabel setFont:[UIFont boldSystemFontOfSize:18]];
-                    self.memberNameLabel.text = [NSString stringWithFormat:@"%@", self.groupName];
+                    if (self.displayedGroupName) {
+                        self.memberNameLabel.text = self.displayedGroupName;
+                    } else {
+                        self.memberNameLabel.text = [NSString stringWithFormat:@"%@", self.groupName];
+                    }
+
                 }
                 else if(indexPath.row==1)
                 {
@@ -855,7 +860,7 @@
     grpUpdate.isViewForUpdatingGroup = YES;
     grpUpdate.channelKey = self.channelKeyID;
     grpUpdate.grpInfoDelegate = self;
-    grpUpdate.channelName = self.alChannel.name;
+    grpUpdate.channelName = self.displayedGroupName;
     grpUpdate.groupImageURL = self.alChannel.channelImageURL;
     [self.navigationController pushViewController:grpUpdate animated:YES];
 }

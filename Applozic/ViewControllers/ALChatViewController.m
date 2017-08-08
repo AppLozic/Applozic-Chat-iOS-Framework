@@ -975,7 +975,8 @@
     self.navigationItem.titleView = titleLabelButton;
     
     CGFloat COORDINATE_POINT_Y = titleLabelButton.frame.size.height - 17;
-    [self.label setFrame: CGRectMake(0, COORDINATE_POINT_Y ,self.navigationController.navigationBar.frame.size.width, 20)];
+//    [self.label setFrame: CGRectMake(0, COORDINATE_POINT_Y ,self.navigationController.navigationBar.frame.size.width, 20)];
+    [self.label setHidden:YES];
 
     ALUserDetail *userDetail = [[ALUserDetail alloc] init];
     userDetail.connected = self.alContact.connected;
@@ -1006,6 +1007,12 @@
         ALContactService * contactService = [ALContactService new];
         self.alContact = [contactService loadContactByKey:@"userId" value:[self.alChannel getReceiverIdInGroupOfTwo]];
         [titleLabelButton setTitle:[self.alContact getDisplayName] forState:UIControlStateNormal];
+    } else {
+        if ([self.alChannel.name isEqualToString:@":UnnamedGroupString:"]) {
+            [titleLabelButton setTitle:[channelService stringFromChannelUserList:self.channelKey] forState:UIControlStateNormal];
+        } else {
+            [titleLabelButton setTitle:self.alChannel.name forState:UIControlStateNormal];
+        }
     }
 }
 
@@ -1022,7 +1029,11 @@
         ALGroupDetailViewController * groupDetailViewController = (ALGroupDetailViewController*)[storyboard instantiateViewControllerWithIdentifier:@"ALGroupDetailViewController"];
         groupDetailViewController.channelKeyID = self.channelKey;
         groupDetailViewController.alChatViewController = self;
-        
+        if ([self.alChannel.name isEqualToString:@":UnnamedGroupString:"]) {
+            groupDetailViewController.displayedGroupName = [alChannelService stringFromChannelUserList:self.channelKey];
+        } else {
+            groupDetailViewController.displayedGroupName = self.alChannel.name;
+        }
         [self.navigationController pushViewController:groupDetailViewController animated:YES];
     }
 }
