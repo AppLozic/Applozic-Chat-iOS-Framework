@@ -86,6 +86,7 @@
     self.descriptionTextView.hidden = NO;
     self.descriptionTextView.userInteractionEnabled = NO;
     [self.tabBarController.tabBar setHidden:YES];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:[self setCustomBackButton]];
     // self.alNewContactViewController.delegateGroupCreation = self;
 }
 
@@ -100,6 +101,21 @@
     {
         [self.groupIconView setImage:DEFAULT_GROUP_ICON_IMAGE];
     }
+}
+
+- (UIView *)setCustomBackButton {
+    UIButton *backButton = [[UIButton alloc] initWithFrame:CGRectMake(-5, 0, 30, 40)];
+    [backButton setImage:[UIImage imageNamed:@"backButton"] forState:UIControlStateNormal];
+    [backButton addTarget:self action:@selector(popViewController) forControlEvents:UIControlEventTouchUpInside];
+    
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 45, 40)];
+    [view addSubview:backButton];
+    
+    return view;
+}
+
+- (void)popViewController {
+    [self.navigationController popViewControllerAnimated:true];
 }
 
 -(void)viewWillDisappear:(BOOL)animated

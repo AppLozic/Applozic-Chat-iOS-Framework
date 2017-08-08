@@ -61,6 +61,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateUser:) name:@"USER_DETAIL_OTHER_VC" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleAPNS:) name:@"pushNotification" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showMQTTNotification:) name:@"MQTT_APPLOZIC_01" object:nil];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:[self setCustomBackButton]];
 }
 
 -(void)viewWillDisappear:(BOOL)animated
@@ -69,6 +70,21 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"USER_DETAIL_OTHER_VC" object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"pushNotification" object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"MQTT_APPLOZIC_01" object:nil];
+}
+
+- (UIView *)setCustomBackButton {
+    UIButton *backButton = [[UIButton alloc] initWithFrame:CGRectMake(-5, 0, 30, 40)];
+    [backButton setImage:[UIImage imageNamed:@"backButton"] forState:UIControlStateNormal];
+    [backButton addTarget:self action:@selector(popViewController) forControlEvents:UIControlEventTouchUpInside];
+    
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 45, 40)];
+    [view addSubview:backButton];
+    
+    return view;
+}
+
+- (void)popViewController {
+    [self.navigationController popViewControllerAnimated:true];
 }
 
 -(void)updateUser:(NSNotification *)notifyObj
