@@ -907,9 +907,10 @@
 
 -(UIView *)setCustomBackButton:(NSString *)text
 {
-    UIImageView *imageView = [[UIImageView alloc] initWithImage: [ALUtilityClass getImageFromFramworkBundle:@"bbb.png"]];
-    [imageView setFrame:CGRectMake(-10, 0, 30, 30)];
+    UIImageView *imageView = [[UIImageView alloc] initWithImage: [ALUtilityClass getImageFromFramworkBundle:@"backButton.png"]];
+    [imageView setFrame:CGRectMake(4, -1, 30, 30)];
     [imageView setTintColor:[UIColor whiteColor]];
+    [imageView setContentMode:UIViewContentModeCenter];
     UILabel *label=[[UILabel alloc] initWithFrame:CGRectMake(imageView.frame.origin.x + imageView.frame.size.width - 5, imageView.frame.origin.y + 5 , @"back".length, 15)];
     [label setTextColor: [ALApplozicSettings getColorForNavigationItem]];
     [label setText:text];
