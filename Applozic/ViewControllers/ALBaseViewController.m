@@ -48,7 +48,7 @@ static CGFloat const sendTextViewCornerRadius = 15.0f;
     [self setUpTheming];
     
     self.sendMessageTextView.clipsToBounds = YES;
-    self.sendMessageTextView.layer.cornerRadius = sendTextViewCornerRadius;
+//    self.sendMessageTextView.layer.cornerRadius = sendTextViewCornerRadius;
 //    self.sendMessageTextView.frame.size.height/5;
     
     self.sendMessageTextView.textContainer.lineBreakMode = NSLineBreakByCharWrapping;
@@ -309,7 +309,7 @@ static CGFloat const sendTextViewCornerRadius = 15.0f;
 -(void)sendButtonUI
 {
     [self.sendButton setBackgroundColor:[ALApplozicSettings getColorForSendButton]];
-   self.sendButton.layer.cornerRadius = sendTextViewCornerRadius + 5;
+    self.sendButton.layer.cornerRadius = sendTextViewCornerRadius + 5;
     self.sendButton.layer.masksToBounds = YES;
     
     [self.typingMessageView sendSubviewToBack:self.typeMsgBG];
