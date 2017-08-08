@@ -107,7 +107,7 @@
         [self.searchBar setUserInteractionEnabled:YES];
     }
     
-    barButtonItem = [[UIBarButtonItem alloc] initWithCustomView:[self setCustomBackButton:@"Back"]];
+    barButtonItem = [[UIBarButtonItem alloc] initWithCustomView:[self setCustomBackButton:@""]];
     
     self.colors = [[NSArray alloc] initWithObjects:@"#617D8A",@"#628B70",@"#8C8863",@"8B627D",@"8B6F62", nil];
     
