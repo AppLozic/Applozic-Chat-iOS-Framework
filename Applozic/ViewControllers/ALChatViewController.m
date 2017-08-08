@@ -174,10 +174,25 @@
     }
 }
 
--(void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
+- (UIView *)setCustomBackButton {
+    UIButton *backButton = [[UIButton alloc] initWithFrame:CGRectMake(-5, 0, 30, 40)];
+    [backButton setImage:[UIImage imageNamed:@"backButton"] forState:UIControlStateNormal];
+    [backButton addTarget:self action:@selector(popViewController) forControlEvents:UIControlEventTouchUpInside];
     
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 45, 40)];
+    [view addSubview:backButton];
+
+    return view;
+}
+
+- (void)popViewController {
+    [self.navigationController popViewControllerAnimated:true];
+}
+
+-(void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:[self setCustomBackButton]];
+
     [[NSNotificationCenter defaultCenter]
      addObserver:self selector:@selector(newMessageHandler:) name:NEW_MESSAGE_NOTIFICATION  object:nil];
     
@@ -957,34 +972,35 @@
     }
     
     titleLabelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    titleLabelButton.frame = CGRectMake(0, 0, 70, 44);
+    titleLabelButton.frame = CGRectMake(-200, 0, 100, 44);
     [titleLabelButton addTarget:self action:@selector(didTapTitleView:) forControlEvents:UIControlEventTouchUpInside];
     titleLabelButton.userInteractionEnabled = YES;
     [titleLabelButton setTitleColor:[ALApplozicSettings getColorForNavigationItem] forState:UIControlStateNormal];
     
 //    if(!(self.individualLaunch) || [ALUserDefaultsHandler isServerCallDoneForUserInfoForContact:[self.alContact userId]])
 //    {
-        [titleLabelButton setTitle:[self.alContact getDisplayName] forState:UIControlStateNormal];
+//        [titleLabelButton setTitle:[self.alContact getDisplayName] forState:UIControlStateNormal];
 //    }
     
-    if([self isGroup])
-    {
+    if ([self isGroup]) {
         [self setButtonTitle];
+    } else {
+        [titleLabelButton setTitle:[self.alContact getDisplayName] forState:UIControlStateNormal];
     }
     
     self.navigationItem.titleView = titleLabelButton;
     
-    CGFloat COORDINATE_POINT_Y = titleLabelButton.frame.size.height - 17;
+//    CGFloat COORDINATE_POINT_Y = titleLabelButton.frame.size.height - 17;
 //    [self.label setFrame: CGRectMake(0, COORDINATE_POINT_Y ,self.navigationController.navigationBar.frame.size.width, 20)];
-    [self.label setHidden:YES];
+//    [self.label setHidden:YES];
 
-    ALUserDetail *userDetail = [[ALUserDetail alloc] init];
-    userDetail.connected = self.alContact.connected;
-    userDetail.userId = self.alContact.userId;
-    userDetail.lastSeenAtTime = self.alContact.lastSeenAt;
-    userDetail.contactNumber = self.alContact.contactNumber;
+//    ALUserDetail *userDetail = [[ALUserDetail alloc] init];
+//    userDetail.connected = self.alContact.connected;
+//    userDetail.userId = self.alContact.userId;
+//    userDetail.lastSeenAtTime = self.alContact.lastSeenAt;
+//    userDetail.contactNumber = self.alContact.contactNumber;
     
-    [self updateLastSeenAtStatus:userDetail];
+//    [self updateLastSeenAtStatus:userDetail];
 }
 
 -(void)channelDeleted
@@ -1021,7 +1037,8 @@
     ALChannelService * alChannelService  = [[ALChannelService alloc] init];
     if(self.contactIds && !self.channelKey)
     {
-        [self getUserInformation];
+        // Disable user profile from chat
+//        [self getUserInformation];
     }
     else if (![ALApplozicSettings isGroupInfoDisabled] && (self.alChannel.type != GROUP_OF_TWO) && ![ALChannelService isChannelDeleted:self.channelKey])
     {
