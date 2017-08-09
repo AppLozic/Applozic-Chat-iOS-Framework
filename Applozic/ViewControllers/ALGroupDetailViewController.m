@@ -467,11 +467,12 @@
                     NSMutableArray *allViewControllers = [NSMutableArray arrayWithArray:[self.navigationController viewControllers]];
                     for (UIViewController *viewController in allViewControllers)
                     {
-                        if ([viewController isKindOfClass: [ALChatViewController class]])
+                        if ([ALPushAssist isViewObjIsMsgVC:viewController])
                         {
                             [self.navigationController popToViewController:viewController animated:YES];
                         }
                     }
+                    [self.navigationController popViewControllerAnimated:YES];
                 }
             }];
         }
