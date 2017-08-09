@@ -470,6 +470,7 @@
                         if ([ALPushAssist isViewObjIsMsgVC:viewController])
                         {
                             [self.navigationController popToViewController:viewController animated:YES];
+                            return;
                         }
                     }
                     [self.navigationController popViewControllerAnimated:YES];
