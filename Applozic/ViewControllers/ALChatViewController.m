@@ -331,6 +331,8 @@ ABPeoplePickerNavigationControllerDelegate>
     [self subscrbingChannel];
     
     [self loadMessagesForOpenChannel];
+    
+    [self setRightNavButtonToContacts];
 }
 
 -(void)setFreezeForAddingRemovingUser:(NSNotification *)notifyObject
@@ -1731,13 +1733,20 @@ ABPeoplePickerNavigationControllerDelegate>
     self.navigationItem.rightBarButtonItem = donePickerSelectionButton;
 }
 
--(void)setRightNavButtonToRefresh
+-(void)setRightNavButtonToContacts
 {
-    UIBarButtonItem *refreshButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh
-                                                                                   target:self
-                                                                                   action:@selector(refreshTable:)];
-    
-    self.navigationItem.rightBarButtonItem = refreshButton;
+    UIBarButtonItem *contactsButton = [[UIBarButtonItem alloc]
+                                       initWithImage:[UIImage imageNamed:@"showContacts.png" inBundle:nil compatibleWithTraitCollection:nil]
+                                       style:UIBarButtonItemStylePlain
+                                       target:self
+                                       action:@selector(contactsPressed:)];
+
+    self.navigationItem.rightBarButtonItem = contactsButton;
+}
+
+-(void)contactsPressed:(id)sender
+{
+    [self.chatViewNavigationDelegate chatViewControllerDidTapNavigationContactsButton:self.channelKey];
 }
 
 //==============================================================================================================================================
@@ -1760,7 +1769,7 @@ ABPeoplePickerNavigationControllerDelegate>
         [self.pickerView setHidden:YES];
     }];
     
-    [self setRightNavButtonToRefresh];
+    [self setRightNavButtonToContacts];
     
     [self updateContextInView];
     isPickerOpen = NO;
