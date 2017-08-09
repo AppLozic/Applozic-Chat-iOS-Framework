@@ -332,7 +332,9 @@ ABPeoplePickerNavigationControllerDelegate>
     
     [self loadMessagesForOpenChannel];
     
-    [self setRightNavButtonToContacts];
+    if (self.channelKey) {
+        [self setRightNavButtonToContacts];
+    }
 }
 
 -(void)setFreezeForAddingRemovingUser:(NSNotification *)notifyObject
