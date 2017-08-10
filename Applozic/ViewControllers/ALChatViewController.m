@@ -977,8 +977,6 @@ ABPeoplePickerNavigationControllerDelegate>
     
     titleLabelButton = [UIButton buttonWithType:UIButtonTypeCustom];
     titleLabelButton.frame = CGRectMake(-200, 0, 100, 44);
-    [titleLabelButton addTarget:self action:@selector(didTapTitleView:) forControlEvents:UIControlEventTouchUpInside];
-    titleLabelButton.userInteractionEnabled = YES;
     [titleLabelButton setTitleColor:[ALApplozicSettings getColorForNavigationItem] forState:UIControlStateNormal];
     
     //    if(!(self.individualLaunch) || [ALUserDefaultsHandler isServerCallDoneForUserInfoForContact:[self.alContact userId]])
@@ -1741,14 +1739,9 @@ ABPeoplePickerNavigationControllerDelegate>
                                        initWithImage:[UIImage imageNamed:@"showContacts.png" inBundle:nil compatibleWithTraitCollection:nil]
                                        style:UIBarButtonItemStylePlain
                                        target:self
-                                       action:@selector(contactsPressed:)];
+                                       action:@selector(didTapTitleView:)];
 
     self.navigationItem.rightBarButtonItem = contactsButton;
-}
-
--(void)contactsPressed:(id)sender
-{
-    [self.chatViewNavigationDelegate chatViewControllerDidTapNavigationContactsButton:self.channelKey];
 }
 
 //==============================================================================================================================================

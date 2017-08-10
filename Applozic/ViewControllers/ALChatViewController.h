@@ -28,13 +28,6 @@
 
 @end
 
-@protocol ALChatViewControllerNavigationDelegate <NSObject>
-
-@optional
--(void)chatViewControllerDidTapNavigationContactsButton:(NSNumber *)groupID;
-
-@end
-
 @interface ALChatViewController : ALBaseViewController<UITableViewDataSource,UITableViewDelegate,UIActionSheetDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,ALMapViewControllerDelegate,ALChatCellDelegate,CNContactPickerDelegate>
 
 @property (strong, nonatomic) ALContact * alContact;
@@ -57,7 +50,6 @@
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *tableViewTop2Constraint;
 
 @property (strong, nonatomic) id <ALChatViewControllerDelegate> chatViewDelegate;
-@property (weak, nonatomic) id <ALChatViewControllerNavigationDelegate> chatViewNavigationDelegate;
 
 -(void)fetchAndRefresh;
 -(void)fetchAndRefresh:(BOOL)flag;
