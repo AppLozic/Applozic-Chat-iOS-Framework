@@ -59,7 +59,6 @@
         [self setTitle:@"Group Update"];
         [nextContacts setTitle:@"Update"];
         [nextContacts setAction:@selector(updateGroupInfo:)];
-        self.groupNameInput.text = self.channelName;
         [self setProfileImage];
     }
     else
@@ -132,22 +131,7 @@
     //Check if group name text is empty
     if([self.groupNameInput.text isEqualToString:@""])
     {
-        UIAlertController *alertController = [UIAlertController
-                                              alertControllerWithTitle:@"Group Name"
-                                              message:@"Please give the group name."
-                                              preferredStyle:UIAlertControllerStyleAlert];
-        
-        [ALUtilityClass setAlertControllerFrame:alertController andViewController:self];
-        
-        UIAlertAction *okAction = [UIAlertAction
-                                   actionWithTitle:NSLocalizedString(@"OK", @"OK action")
-                                   style:UIAlertActionStyleDefault
-                                   handler:^(UIAlertAction *action)
-                                   {
-                                       NSLog(@"OK action");
-                                   }];
-        [alertController addAction:okAction];
-        [self presentViewController:alertController animated:YES completion:nil];
+        [self.navigationController popViewControllerAnimated:YES];
         return;
     }
     
