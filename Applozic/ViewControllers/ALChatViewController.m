@@ -1017,15 +1017,35 @@ ABPeoplePickerNavigationControllerDelegate>
 -(void)setButtonTitle {
     ALChannelService *channelService = [[ALChannelService alloc] init];
     self.alChannel = [channelService getChannelByKey:self.channelKey];
-    NSString *groupTitle = [NSString stringWithFormat:@"%@ (%@)", self.alChannel.name, self.alChannel.userCount];
+    NSString *groupTitle = self.alChannel.name;
+    if (self.alChannel.userCount.integerValue > 0) {
+        groupTitle = [NSString stringWithFormat:@"%@ (%@)", self.alChannel.name, self.alChannel.userCount];
+    }
+    
     if(self.alChannel.type == GROUP_OF_TWO) {
         NSLog(@"CURENT clientChannelKey :: %@",self.alChannel.clientChannelKey);
         ALContactService * contactService = [ALContactService new];
         self.alContact = [contactService loadContactByKey:@"userId" value:[self.alChannel getReceiverIdInGroupOfTwo]];
-        groupTitle = [NSString stringWithFormat:@"%@ (%@)", [self.alContact getDisplayName], self.alChannel.userCount];
+        if (self.alChannel.userCount.integerValue > 0) {
+            groupTitle = [NSString stringWithFormat:@"%@ (%@)", [self.alContact getDisplayName], self.alChannel.userCount];
+        } else {
+            groupTitle = [self.alContact getDisplayName];
+        }
     } else if ([self.alChannel.name isEqualToString:@":UnnamedGroupString:"]) {
-        groupTitle = [NSString stringWithFormat:@"%@ (%@)", [channelService stringFromChannelUserList:self.channelKey], self.alChannel.userCount];
+        NSString *title = [channelService stringFromChannelUserList:self.channelKey];
+        if (self.alChannel.userCount.integerValue > 0) {
+            groupTitle = [NSString stringWithFormat:@"%@ (%@)", title, self.alChannel.userCount];
+        } else {
+            groupTitle = title;
+        }
     }
+    
+    NSError *error = nil;
+    NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern: @"\\+\\d+" options:0 error:&error];
+    if ([regex matchesInString:groupTitle options:0 range:NSMakeRange(0, groupTitle.length)]) {
+        groupTitle = [regex stringByReplacingMatchesInString:groupTitle options:0 range:NSMakeRange(0, groupTitle.length) withTemplate:@"and"];
+    }
+    
     [titleLabelButton setTitle:groupTitle forState:UIControlStateNormal];
 }
 
@@ -1740,7 +1760,7 @@ ABPeoplePickerNavigationControllerDelegate>
                                        style:UIBarButtonItemStylePlain
                                        target:self
                                        action:@selector(didTapTitleView:)];
-
+    
     self.navigationItem.rightBarButtonItem = contactsButton;
 }
 
