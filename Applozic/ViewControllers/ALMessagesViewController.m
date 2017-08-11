@@ -1139,7 +1139,7 @@
     {
         [self.detailChatViewController syncCall:alMessage updateUI:[NSNumber numberWithInt:APP_STATE_ACTIVE] alertValue:alMessage.message];
     }
-    else if (top.isMessageViewOnTop && (![alMessage.type isEqualToString:@"5"]))
+    else if ((top.isMessageViewOnTop || self.isMessageViewOnTop) && (![alMessage.type isEqualToString:@"5"]))
     {
         [self updateMessageList:messageArray];
         

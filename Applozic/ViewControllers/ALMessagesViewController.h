@@ -34,6 +34,7 @@
 -(void)displayAttachmentMediaType:(ALMessage *)message andContactCell:(ALContactCell *)contactCell;
 
 @property (weak, nonatomic) IBOutlet UITableView *mTableView;
+@property (nonatomic,assign) BOOL isMessageViewOnTop;
 
 -(UIView *)setCustomBackButton:(NSString *)text;
 
