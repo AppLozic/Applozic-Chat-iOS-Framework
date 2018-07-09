@@ -180,28 +180,16 @@
     
     self.groupImageURL = self.groupImageURL ? self.groupImageURL : @"";
     ALChannelService *channelService = [ALChannelService new];
-    
-    NSString* changedName;
-    
-    if(self.channelName != nil && [self.groupNameInput.text isEqualToString:self.channelName]){
-        changedName = nil;
-    }else{
-        changedName = self.groupNameInput.text;
-    }
-    ALChannel *oldChannel =  [channelService getChannelByKey:self.channelKey ];
 
-    if(oldChannel != nil && oldChannel.channelImageURL != NULL && [oldChannel.channelImageURL isEqualToString:self.groupImageURL]){
-        self.groupImageURL = nil;
-    }
     
-    [channelService updateChannel:self.channelKey andNewName:changedName
+    [channelService updateChannel:self.channelKey andNewName:self.groupNameInput.text
                       andImageURL:self.groupImageURL orClientChannelKey:nil isUpdatingMetaData:NO
                          metadata:nil orChildKeys:nil orChannelUsers:nil  withCompletion:^(NSError *error) {
         
           if(!error)
           {
         
-              NSLog(@"ALGroupCreationViewController updated the group info");
+              [ALUtilityClass showAlertMessage:NSLocalizedStringWithDefaultValue(@"groupSuccessFullyUpdateInfo", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle], @"Group information successfully updated", @"") andTitle:NSLocalizedStringWithDefaultValue(@"responseText", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle], @"Response", @"")];
               [self.navigationController popViewControllerAnimated:YES];
               [self.grpInfoDelegate updateGroupInformation];
           }

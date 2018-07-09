@@ -141,7 +141,6 @@
                 ALFileMetaInfo * theFileMetaInfo = [ALFileMetaInfo new];
                 
                 theFileMetaInfo.blobKey = [self getStringFromJsonValue:fileMetaDict[@"blobKey"]];
-                theFileMetaInfo.thumbnailBlobKey = [self getStringFromJsonValue:fileMetaDict[@"thumbnailBlobKey"]];
                 theFileMetaInfo.contentType = [self getStringFromJsonValue:fileMetaDict[@"contentType"]];
                 theFileMetaInfo.createdAtTime = [self getNSNumberFromJsonValue:fileMetaDict[@"createdAtTime"]];
                 theFileMetaInfo.key = [self getStringFromJsonValue:fileMetaDict[@"key"]];
@@ -203,7 +202,7 @@
         formattedDateStr = [ALUtilityClass formatTimestamp:[self.createdAtTime doubleValue]/1000 toFormat:formattedStr];
     }
     
-    return formattedDateStr;
+    return [formattedDateStr stringByReplacingOccurrencesOfString:@"m" withString:@"دقيقة"];
 }
 
 -(NSString *)getCreatedAtTimeChat:(BOOL)today {

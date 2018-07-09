@@ -63,7 +63,6 @@ andWithStatusDelegate:(id)statusDelegate
     theMessage.imageFilePath = attachmentLocalPath.lastPathComponent;
     
     //File Meta Creation
-    theMessage.fileMeta = [self getFileMetaInfo];
     theMessage.fileMeta.name = [NSString stringWithFormat:@"AUD-5-%@", attachmentLocalPath.lastPathComponent];
     if(alMessage.contactIds){
         theMessage.fileMeta.name = [NSString stringWithFormat:@"%@-5-%@",alMessage.contactIds, attachmentLocalPath.lastPathComponent];
@@ -109,22 +108,6 @@ andWithStatusDelegate:(id)statusDelegate
 }
 
 
--(ALFileMetaInfo *)getFileMetaInfo
-{
-    ALFileMetaInfo *info = [ALFileMetaInfo new];
-    
-    info.blobKey = nil;
-    info.contentType = @"";
-    info.createdAtTime = nil;
-    info.key = nil;
-    info.name = @"";
-    info.size = @"";
-    info.userKey = @"";
-    info.thumbnailUrl = @"";
-    info.progressValue = 0;
-    
-    return info;
-}
 
 -(ALMessage *)createMessageEntityOfContentType:(int)contentType
                                       toSendTo:(NSString*)to
@@ -170,7 +153,7 @@ andWithStatusDelegate:(id)statusDelegate
         NSError * theJsonError = nil;
         NSDictionary *theJson = [NSJSONSerialization JSONObjectWithData:connection.mData options:NSJSONReadingMutableLeaves error:&theJsonError];
 
-        if(ALApplozicSettings.isS3StorageServiceEnabled){
+        if(ALApplozicSettings.isCustomStorageServiceEnabled){
             [message.fileMeta populate:theJson];
         }else{
             NSDictionary *fileInfo = [theJson objectForKey:@"fileMeta"];

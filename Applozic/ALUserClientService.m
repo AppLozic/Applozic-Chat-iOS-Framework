@@ -322,13 +322,6 @@
             return;
         }
         
-        NSString *json = (NSString *)theJson;
-        
-        if(json && [json isEqualToString:AL_EMPTY_JSON_STRING]){
-            completionMark(nil, theError);
-            return;
-        }
-            
         NSLog(@"SEVER_RESPONSE_FOR_ONLINE_CONTACT_LIMIT_JSON : %@", (NSString *)theJson);
         NSArray * jsonArray = [NSArray arrayWithArray:(NSArray *)theJson];
         if(jsonArray.count)
@@ -342,8 +335,6 @@
                 [ALLUserDetailArray addObject:userDetail];
             }
             completionMark(ALLUserDetailArray, theError);
-        }else{
-            completionMark(nil, theError);
         }
     }];
 }

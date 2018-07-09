@@ -43,7 +43,6 @@
 #import "ALPushNotificationService.h"
 #import "ALPushAssist.h"
 #import "ALGroupCreationViewController.h"
-#import "ALMessageClientService.h"
 
 // Constants
 #define DEFAULT_TOP_LANDSCAPE_CONSTANT -34
@@ -104,6 +103,7 @@
 #pragma mark - VIEW LIFE CYCLE
 //==============================================================================================================================================
 
+    
 -(void)viewDidLoad
 {
     [super viewDidLoad];
@@ -125,11 +125,16 @@
     CGFloat navigationHeight = self.navigationController.navigationBar.frame.size.height +
     [UIApplication sharedApplication].statusBarFrame.size.height;
     
+    self.navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
+    self.navigationController.navigationBar.tintColor = UIColor.whiteColor;
+    
     self.emptyConversationText = [[UILabel alloc] initWithFrame:CGRectMake(self.view.frame.origin.x,
                                                                            self.view.frame.size.height/2 - navigationHeight,
                                                                            self.view.frame.size.width, 30)];
     
     [self.emptyConversationText setText:[ALApplozicSettings getEmptyConversationText]];
+    [self.emptyConversationText setFont:[UIFont fontWithName:[ALApplozicSettings getFontFace] size:16]];
+
     [self.emptyConversationText setTextAlignment:NSTextAlignmentCenter];
     [self.view addSubview:self.emptyConversationText];
     self.emptyConversationText.hidden = YES;
@@ -140,6 +145,8 @@
         [self createAndLaunchChatView ];
     }
     
+    [self setNeedsStatusBarAppearanceUpdate];
+
 }
 
 -(void)loadMessages:(NSNotification *)notification
@@ -178,7 +185,7 @@
     }
 
     [self.navigationController.navigationBar addSubview:[ALUtilityClass setStatusBarStyle]];
-    [self.navigationItem setLeftBarButtonItem:self.barButtonItem];
+    [self.navigationItem setRightBarButtonItem:self.barButtonItem];
     [self.tabBarController.tabBar setHidden:[ALUserDefaultsHandler isBottomTabBarHidden]];
     
     if ([self.detailChatViewController refreshMainView])
@@ -195,7 +202,7 @@
     
     if([ALUserDefaultsHandler isNavigationRightButtonHidden])
     {
-        [self.navigationItem setRightBarButtonItems:nil];
+        [self.navigationItem setLeftBarButtonItem:nil];
     }
     
     if([ALApplozicSettings getCustomNavRightButtonMsgVC])
@@ -519,11 +526,8 @@
                         isreloadRequire = NO;
                         [channelService getChannelInformation:msg.groupId orClientChannelKey:nil withCompletion:^(ALChannel *alChannel) {
                             
-                            BOOL channelFlag = ([ALApplozicSettings getSubGroupLaunchFlag] && [alChannel.parentKey isEqualToNumber:self.parentGroupKey]);
-                            BOOL categoryFlag =  [ALApplozicSettings getCategoryName] && [alChannel isPartOfCategory:[ALApplozicSettings getCategoryName]];
-                            
-                             if ((channelFlag || categoryFlag) ||
-                                 !([ALApplozicSettings getSubGroupLaunchFlag] || [ALApplozicSettings getCategoryName]))
+                            BOOL channelFlag = [alChannel.parentKey isEqualToNumber:self.parentGroupKey];
+                             if ((channelFlag && [ALApplozicSettings getSubGroupLaunchFlag])|| ![ALApplozicSettings getSubGroupLaunchFlag])
                              {
                                  [self.mContactsMessageListArray insertObject:msg atIndex:0];
                                  [self.mTableView reloadData];
@@ -674,7 +678,7 @@
                  
                  contactCell.mUserImageView.layer.cornerRadius = contactCell.mUserImageView.frame.size.width/2;
                  contactCell.mUserImageView.layer.masksToBounds = YES;
-                 contactCell.mUserImageView.contentMode = UIViewContentModeScaleAspectFit;
+                 contactCell.mUserImageView.contentMode = UIViewContentModeScaleAspectFill;
              });
 
             [contactCell.onlineImageMarker setBackgroundColor:[UIColor clearColor]];
@@ -748,8 +752,8 @@
             contactCell.onlineImageMarker.hidden = (!grpContact.connected);
             if(grpContact.contactImageUrl.length)
             {
-                ALMessageClientService * messageClientService = [[ALMessageClientService alloc]init];
-                [messageClientService downloadImageUrlAndSet:grpContact.contactImageUrl imageView:contactCell.mUserImageView defaultImage:nil];
+                NSURL * theUrl1 = [NSURL URLWithString:grpContact.contactImageUrl];
+                [contactCell.mUserImageView sd_setImageWithURL:theUrl1 placeholderImage:nil options:SDWebImageRefreshCached];
                 contactCell.imageNameLabel.hidden = YES;
                 nameIcon.hidden=YES;
             }
@@ -765,19 +769,21 @@
         else
         {
         
-            NSString  *placeHolderImage ;
+            UIImage  *placeHolderImage ;
             if (alChannel.type == BROADCAST)
             {
-                placeHolderImage = @"broadcast_group.png";
+                placeHolderImage = [ALUtilityClass getImageFromFramworkBundle:@"broadcast_group.png"];
                 [contactCell.mUserImageView setImage:[ALUtilityClass getImageFromFramworkBundle:@"broadcast_group.png"]];
             }else{
-                placeHolderImage = @"applozic_group_icon.png";
+                placeHolderImage = [ALUtilityClass getImageFromFramworkBundle:@"applozic_group_icon.png"];
                 [contactCell.mUserImageView setImage:[ALUtilityClass getImageFromFramworkBundle:@"applozic_group_icon.png"]];
             }
+            NSURL * imageUrl = [NSURL URLWithString:alChannel.channelImageURL];
+            if(imageUrl.path.length)
+            {
+                [contactCell.mUserImageView sd_setImageWithURL:imageUrl placeholderImage:placeHolderImage options:SDWebImageRefreshCached];
+            }
 
-            ALMessageClientService * messageClientService = [[ALMessageClientService alloc]init];
-            [messageClientService downloadImageUrlAndSet:alChannel.channelImageURL imageView:contactCell.mUserImageView defaultImage:placeHolderImage];
-            
             nameIcon.hidden = YES;
             contactCell.mUserNameLabel.text = [alChannel name];
             contactCell.onlineImageMarker.hidden = YES;
@@ -790,8 +796,8 @@
         contactCell.onlineImageMarker.hidden = (!contact.connected);
         if(contact.contactImageUrl.length)
         {
-            ALMessageClientService * messageClientService = [[ALMessageClientService alloc]init];
-            [messageClientService downloadImageUrlAndSet:contact.contactImageUrl imageView:contactCell.mUserImageView defaultImage:@"ic_contact_picture_holo_light.png"];
+            NSURL * theUrl1 = [NSURL URLWithString:contact.contactImageUrl];
+            [contactCell.mUserImageView sd_setImageWithURL:theUrl1 placeholderImage:[ALUtilityClass getImageFromFramworkBundle:@"ic_contact_picture_holo_light.png"] options:SDWebImageRefreshCached];
             contactCell.imageNameLabel.hidden = YES;
             nameIcon.hidden= YES;
         }
@@ -1001,6 +1007,71 @@
 }
 
 /************************************************  DELETE CONVERSATION ON SWIPE ********************************************************/
+
+-(NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+//    UITableViewRowAction *editAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:@"Clona" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
+//        //insert your editAction here
+//    }];
+//    editAction.backgroundColor = [UIColor blueColor];
+//
+    UITableViewRowAction *deleteAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:@"حذف"  handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
+        
+        NSLog(@"DELETE_PRESSED");
+        if(![ALDataNetworkConnection checkDataNetworkAvailable])
+        {
+            [self noDataNotificationView];
+            return;
+        }
+        ALMessage * alMessageobj = self.mContactsMessageListArray[indexPath.row];
+        
+        ALChannelService *channelService = [ALChannelService new];
+        
+        if([channelService isChannelLeft:[alMessageobj getGroupId]])
+        {
+            NSArray * filteredArray = [self.mContactsMessageListArray filteredArrayUsingPredicate:
+                                       [NSPredicate predicateWithFormat:@"groupId = %@",[alMessageobj getGroupId]]];
+            
+            [self.dBService deleteAllMessagesByContact:nil orChannelKey:[alMessageobj getGroupId]];
+            [ALChannelService setUnreadCountZeroForGroupID:[alMessageobj getGroupId]];
+            [self subProcessDeleteMessageThread:filteredArray];
+            return;
+        }
+        
+        [ALMessageService deleteMessageThread:alMessageobj.contactIds orChannelKey:[alMessageobj getGroupId]
+                               withCompletion:^(NSString *string, NSError *error) {
+                                   
+                                   if(error)
+                                   {
+                                       NSLog(@"DELETE_FAILED_CONVERSATION_ERROR_DESCRIPTION :: %@", error.description);
+                                       [ALUtilityClass displayToastWithMessage:@"Delete failed"];
+                                       return;
+                                   }
+                                   NSArray * theFilteredArray;
+                                   if([alMessageobj getGroupId])
+                                   {
+                                       
+                                       theFilteredArray = [self.mContactsMessageListArray filteredArrayUsingPredicate:
+                                                           [NSPredicate predicateWithFormat:@"groupId = %@",[alMessageobj getGroupId]]];
+                                   }
+                                   else
+                                   {
+                                       theFilteredArray = [self.mContactsMessageListArray filteredArrayUsingPredicate:
+                                                           [NSPredicate predicateWithFormat:@"contactIds = %@ AND groupId = %@",alMessageobj.contactIds,nil]];
+                                   }
+                                   
+                                   [self subProcessDeleteMessageThread:theFilteredArray];
+                                   
+                                   if([ALChannelService isChannelDeleted:[alMessageobj getGroupId]])
+                                   {
+                                       ALChannelDBService *channelDBService = [[ALChannelDBService alloc] init];
+                                       [channelDBService deleteChannel:[alMessageobj getGroupId]];
+                                   }
+                               }];
+    }];
+    deleteAction.backgroundColor = [UIColor redColor];
+    return @[deleteAction];
+}
 
 -(void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -1387,31 +1458,38 @@
 //==============================================================================================================================================
 #pragma mark - CUSTOM NAVIGATION BACK BUTTON
 //==============================================================================================================================================
+//    override var preferredStatusBarStyle: UIStatusBarStyle {
+//        self.navigationController?.navigationBar.barStyle = .black;//or default
+//        return .lightContent //or default
+//    }
+    
 
+    
 -(UIView *)setCustomBackButton:(NSString *)text
 {
     UIImage * backImage = [ALUtilityClass getImageFromFramworkBundle:@"bbb.png"];
     backImage = [backImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     UIImageView *imageView = [[UIImageView alloc] initWithImage:backImage];
-    [imageView setFrame:CGRectMake(-10, 0, 30, 30)];
+    [imageView setFrame:CGRectMake(4,0, 30, 30)];
+    imageView.contentMode = UIViewContentModeScaleAspectFit;
     [imageView setTintColor:[ALApplozicSettings getColorForNavigationItem]];
-    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(imageView.frame.origin.x + imageView.frame.size.width - 5,
-                                                               imageView.frame.origin.y + 5 , 20, 15)];
+//    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(imageView.frame.origin.x + imageView.frame.size.width - 5,
+//                                                               imageView.frame.origin.y + 5 , 20, 15)];
     
-    [label setTextColor:[ALApplozicSettings getColorForNavigationItem]];
-    [label setText:text];
-    [label sizeToFit];
+//    [label setTextColor:[ALApplozicSettings getColorForNavigationItem]];
+//    [label setText:text];
+//    [label sizeToFit];
     
     UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0,
-                                                            imageView.frame.size.width + label.frame.size.width, imageView.frame.size.height)];
+                                                            imageView.frame.size.width , imageView.frame.size.height)];
     
-    view.bounds = CGRectMake(view.bounds.origin.x + 8, view.bounds.origin.y - 1, view.bounds.size.width, view.bounds.size.height);
+    view.bounds = CGRectMake(view.bounds.origin.x , view.bounds.origin.y - 1, view.bounds.size.width, view.bounds.size.height);
     if ([UIApplication sharedApplication].userInterfaceLayoutDirection == UIUserInterfaceLayoutDirectionRightToLeft) {
         view.transform = CGAffineTransformMakeScale(-1.0, 1.0);
-        label.transform = CGAffineTransformMakeScale(-1.0, 1.0);
+       // label.transform = CGAffineTransformMakeScale(-1.0, 1.0);
     }
     [view addSubview:imageView];
-    [view addSubview:label];
+//    [view addSubview:label];
     
 //    UIButton * button = [[UIButton alloc] initWithFrame:view.frame];
 //    [button addTarget:self action:@selector(back:) forControlEvents:UIControlEventTouchUpInside];

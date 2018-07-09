@@ -17,10 +17,8 @@
 #import "ALContactDBService.h"
 #import "ALMessageService.h"
 #import "ALUserService.h"
-#import "NSData+AES.h"
 
 #define MQTT_TOPIC_STATUS @"status-v2"
-#define MQTT_ENCRYPTION_SUB_KEY @"encr-"
 
 @implementation ALMQTTConversationService
 
@@ -84,11 +82,7 @@
                                                  qos:MQTTQosLevelAtMostOnce];
                     
                     NSLog(@"MQTT : SUBSCRIBING TO CONVERSATION TOPICS");
-                    if([ALUserDefaultsHandler getEnableEncryption] && [ALUserDefaultsHandler getUserEncryptionKey] ){
-                        [self.session subscribeToTopic:[NSString stringWithFormat:@"%@%@",MQTT_ENCRYPTION_SUB_KEY,[ALUserDefaultsHandler getUserKeyString]] atLevel:MQTTQosLevelAtMostOnce];
-                    }else{
-                        [self.session subscribeToTopic:[ALUserDefaultsHandler getUserKeyString] atLevel:MQTTQosLevelAtMostOnce];
-                    }
+                    [self.session subscribeToTopic:[ALUserDefaultsHandler getUserKeyString] atLevel:MQTTQosLevelAtMostOnce];
                     [self.session subscribeToTopic:[NSString stringWithFormat:@"typing-%@-%@", [ALUserDefaultsHandler getApplicationKey], [ALUserDefaultsHandler getUserId]] atLevel:MQTTQosLevelAtMostOnce];
                     [ALUserDefaultsHandler setLoggedInUserSubscribedMQTT:YES];
                     [self.mqttConversationDelegate mqttDidConnected];
@@ -115,25 +109,7 @@
 {
     NSString *fullMessage = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     
-    if([ALUserDefaultsHandler getEnableEncryption] && [ALUserDefaultsHandler getUserEncryptionKey] && [topic hasPrefix:MQTT_ENCRYPTION_SUB_KEY]){
-        
-        NSLog(@"Key : %@",  [ALUserDefaultsHandler getUserEncryptionKey]);
-        NSData *base64DecodedData = [[NSData alloc] initWithBase64EncodedData:data options:0];
-        NSData *theData = [base64DecodedData AES128DecryptedDataWithKey:[ALUserDefaultsHandler getUserEncryptionKey]];
-        NSString * dataToString = [NSString stringWithUTF8String:[theData bytes]];
-        NSLog(@"Data to String : %@",  dataToString);
-        data = [dataToString dataUsingEncoding:NSUTF8StringEncoding];
-        
-        NSLog(@"MQTT_GOT_NEW_MESSAGE after decyption : %@", dataToString);
-    }else{
-        fullMessage = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding ];
-    }
-    
     NSLog(@"MQTT_GOT_NEW_MESSAGE : %@", fullMessage);
-    
-    if(!fullMessage){
-        return;
-    }
     
     NSError *error = nil;
     NSDictionary *theMessageDict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
@@ -432,11 +408,7 @@
                                  onTopic:MQTT_TOPIC_STATUS
                                   retain:NO
                                      qos:MQTTQosLevelAtMostOnce];
-        if([ALUserDefaultsHandler getEnableEncryption] && [ALUserDefaultsHandler getUserEncryptionKey] ){
-            [self.session unsubscribeTopic:[NSString stringWithFormat:@"%@%@",MQTT_ENCRYPTION_SUB_KEY,[ALUserDefaultsHandler getUserKeyString]]];
-        }else{
-            [self.session unsubscribeTopic:[ALUserDefaultsHandler getUserKeyString]];
-        }
+        [self.session unsubscribeTopic:[ALUserDefaultsHandler getUserKeyString]];
         [self.session unsubscribeTopic:[NSString stringWithFormat:@"typing-%@-%@", [ALUserDefaultsHandler getApplicationKey], [ALUserDefaultsHandler getUserId]]];
         [self.session close];
         NSLog(@"MQTT : DISCONNECTED FROM MQTT");

@@ -171,7 +171,6 @@
         {
             NSLog(@"========== IF internetConnectionReach ============");
             [self proactivelyConnectMQTT];
-            [ALMessageService syncMessages];
             [ALMessageService processPendingMessages];
             
             ALUserService *userService = [ALUserService new]; 
@@ -203,7 +202,19 @@
 - (void)appWillEnterForegroundBase:(NSNotification *)notification
 {
     [self proactivelyConnectMQTT];
-    [ALMessageService syncMessages];
+    //Works in 3rd Party borders..
+    NSString * deviceKeyString = [ALUserDefaultsHandler getDeviceKeyString];
+//   CHECK HERE FOR THAT FLAG FOR SYNC CALL
+    if([ALUserDefaultsHandler isLoggedIn])
+    {
+        [ALMessageService getLatestMessageForUser:deviceKeyString withCompletion:^(NSMutableArray *messageArray, NSError *error) {
+            
+            if(error)
+            {
+                NSLog(@"ERROR IN LATEST MSG APNs CLASS : %@",error);
+            }
+        }];
+    }
 }
 
 // To DISPLAY THE NOTIFICATION ONLY ...from 3rd Party View.

@@ -93,15 +93,12 @@
 @property (nonatomic, strong) NSMutableArray * pickerConvIdsArray;
 @property (nonatomic, strong) NSMutableArray * conversationTitleList;
 @property (nonatomic, weak) IBOutlet NSLayoutConstraint *tableViewSendMsgTextViewConstraint;
-@property (nonatomic, weak) IBOutlet NSLayoutConstraint *typingLabelBottomConstraint;
 @property (nonatomic, assign) BOOL comingFromBackground;
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nsLayoutconstraintAttachmentWidth;
+    @property (strong, nonatomic) UIBarButtonItem *barButtonItem;
 
 //============Message Reply outlets====================================//
-
-@property (nonatomic, weak) IBOutlet NSLayoutConstraint *tableViewViewBottomConstraint;
-
 @property (weak, nonatomic) IBOutlet UIImageView *replyAttachmentPreview;
 @property (weak, nonatomic) IBOutlet UIView *messageReplyView;
 - (IBAction)cancelMessageReply:(id)sender;
@@ -137,9 +134,9 @@
     UIView * maskView;
     BOOL isPickerOpen;
     ALSoundRecorderButton * soundRecording;
-    ALTemplateMessagesView *templateMessageView;
     BOOL isMicButtonVisible;
 
+    
     UIDocumentInteractionController * interaction;
     
     CGFloat TEXT_CELL_HEIGHT;
@@ -161,11 +158,58 @@
     ALMessageDBService * dbService;
 }
 
-
+    -(IBAction)backButtonAction:(id)sender
+    {
+        UIViewController *  uiController = [self.navigationController popViewControllerAnimated:YES];
+        if(!uiController)
+        {
+            [self  dismissViewControllerAnimated:YES completion:nil];
+        }
+    }
+    
 //==============================================================================================================================================
 #pragma mark - VIEW LIFECYCLE
 //==============================================================================================================================================
 
+    -(UIView *)setCustomBackButton:(NSString *)text
+    {
+        UIImage * backImage = [ALUtilityClass getImageFromFramworkBundle:@"bbb.png"];
+        backImage = [backImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        UIImageView *imageView = [[UIImageView alloc] initWithImage:backImage];
+        [imageView setFrame:CGRectMake(4,0, 30, 30)];
+        imageView.contentMode = UIViewContentModeScaleAspectFit;
+        [imageView setTintColor:[ALApplozicSettings getColorForNavigationItem]];
+        //    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(imageView.frame.origin.x + imageView.frame.size.width - 5,
+        //                                                               imageView.frame.origin.y + 5 , 20, 15)];
+        
+        //    [label setTextColor:[ALApplozicSettings getColorForNavigationItem]];
+        //    [label setText:text];
+        //    [label sizeToFit];
+        
+        UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0,
+                                                                imageView.frame.size.width , imageView.frame.size.height)];
+        
+        view.bounds = CGRectMake(view.bounds.origin.x , view.bounds.origin.y - 1, view.bounds.size.width, view.bounds.size.height);
+        if ([UIApplication sharedApplication].userInterfaceLayoutDirection == UIUserInterfaceLayoutDirectionRightToLeft) {
+            view.transform = CGAffineTransformMakeScale(-1.0, 1.0);
+            // label.transform = CGAffineTransformMakeScale(-1.0, 1.0);
+        }
+        [view addSubview:imageView];
+        //    [view addSubview:label];
+        
+        //    UIButton * button = [[UIButton alloc] initWithFrame:view.frame];
+        //    [button addTarget:self action:@selector(back:) forControlEvents:UIControlEventTouchUpInside];
+        
+        UITapGestureRecognizer * backTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(back:)];
+        backTap.numberOfTapsRequired = 1;
+        [view addGestureRecognizer:backTap];
+        
+        //    [button addSubview:view];
+        //    [view addSubview:button];
+        return view;
+    }
+
+    
 -(void)viewDidLoad
 {
     [super viewDidLoad];
@@ -175,8 +219,6 @@
         [self setUpSoundRecordingView];
         [self showMicButton];
     }
-    
- 
 
     [self initialSetUp];
     [self fetchMessageFromDB];
@@ -188,6 +230,13 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateVOIPMsg)
                                                  name:@"UPDATE_VOIP_MSG" object:nil];
     
+     self.barButtonItem = [[UIBarButtonItem alloc] initWithCustomView:[self setCustomBackButton: NSLocalizedStringWithDefaultValue(@"back", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle], [ALApplozicSettings getTitleForBackButtonMsgVC], @"")]];
+    
+    [self.navigationItem setLeftBarButtonItem:nil];
+    self.navigationItem.hidesBackButton = YES;
+    
+    self.navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
+    self.navigationController.navigationBar.tintColor = UIColor.whiteColor;
 }
 
 -(void)viewDidAppear:(BOOL)animated
@@ -198,6 +247,9 @@
     [self.loadEarlierAction setBackgroundColor:[UIColor grayColor]];
     [self markConversationRead];
     [self.loadEarlierAction setTitle:NSLocalizedStringWithDefaultValue(@"loadEarlierMessagesText", [ALApplozicSettings getLocalizableName],[NSBundle mainBundle], @"Load Earlier Messages", @"") forState:UIControlStateNormal];
+    //[self.loadEarlierAction titleLabel.font]
+    self.loadEarlierAction.titleLabel.font = [UIFont fontWithName:@"DroidArabicKufi" size:15];
+
     [[[self navigationController] interactivePopGestureRecognizer] setEnabled:NO];
     [UIView animateWithDuration:0.3 animations:^{
         [self subProcessTextViewDidChange:self.sendMessageTextView];
@@ -218,10 +270,6 @@
      addObserver:self selector:@selector(newMessageHandler:) name:NEW_MESSAGE_NOTIFICATION  object:nil];
     
     [self.tabBarController.tabBar setHidden: YES];
-    
-    if([ALApplozicSettings isTemplateMessageEnabled]) {
-        [self setUpTeamplateView];
-    }
 
     // In iOS 11, TableView by default starts estimating the row height. This setting will disable that.
     self.mTableView.estimatedRowHeight = 0;
@@ -231,7 +279,9 @@
     [self.loadEarlierAction setHidden:YES];
     self.showloadEarlierAction = TRUE;
     self.typingLabel.hidden = YES;
-    
+    if ([UIApplication sharedApplication].userInterfaceLayoutDirection == UIUserInterfaceLayoutDirectionRightToLeft) {
+        self.typingLabel.textAlignment = NSTextAlignmentRight;
+    }
     self.comingFromBackground = YES;
     [self.messageReplyView setHidden:YES];
     
@@ -240,6 +290,7 @@
     if (ALApplozicSettings.isAttachmentButtonHidden) {
         _attachmentButton.hidden = YES;
     }
+    
     if([self isReloadRequired])
     {
         [self reloadView];
@@ -306,7 +357,7 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateCallForUser:)
                                                  name:@"USER_DETAILS_UPDATE_CALL" object:nil];
-
+    
     self.mqttObject = [ALMQTTConversationService sharedInstance];
     
     if(self.individualLaunch)
@@ -379,6 +430,9 @@
     [self subscrbingChannel];
     
     [self loadMessagesForOpenChannel];
+    
+    [self.navigationItem setRightBarButtonItem:self.barButtonItem];
+
 }
 
 -(void)setFreezeForAddingRemovingUser:(NSNotification *)notifyObject
@@ -440,10 +494,6 @@
     
     [self.tabBarController.tabBar setHidden:YES];
     [self resetMessageReplyView];
-    
-    if([ALApplozicSettings isTemplateMessageEnabled]) {
-        [templateMessageView setHidden:YES];
-    }
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"notificationIndividualChat" object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"report_DELIVERED" object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"report_DELIVERED_READ" object:nil];
@@ -459,6 +509,7 @@
     
     [self.sendMessageTextView resignFirstResponder];
     [self.label setHidden:YES];
+    [self.typingLabel setHidden:YES];
     [[ALMediaPlayer sharedInstance] stopPlaying];
     
     if(self.individualLaunch)
@@ -496,30 +547,6 @@
     [self.mTableView reloadData];
     [self setRefreshMainView:YES];
     [self setRefresh:YES];
-}
-
--(void)processSendTemplateMessage:(NSString *)messageText{
-    
-    if(!messageText){
-        return;
-    }
-    // create message object
-    ALMessage * theMessage = [self getMessageToPost];
-    theMessage.
-    message = messageText;
-    // save msg to db
-    [self.alMessageWrapper addALMessageToMessageArray:theMessage];
-    
-    ALDBHandler * theDBHandler = [ALDBHandler sharedInstance];
-    ALMessageDBService* messageDBService = [[ALMessageDBService alloc] init];
-    DB_Message * theMessageEntity = [messageDBService createMessageEntityForDBInsertionWithMessage:theMessage];
-    [theDBHandler.managedObjectContext save:nil];
-    theMessage.msgDBObjectId = [theMessageEntity objectID];
-    
-    [self sendMessage:theMessage ];
-    [self.mTableView reloadData];
-    [self setRefreshMainView:TRUE];
-    [self scrollTableViewToBottomWithAnimation:YES];
 }
 
 //==============================================================================================================================================
@@ -612,7 +639,7 @@
 {
     [navigationController.navigationBar setTitleTextAttributes: @{
                                                                   NSForegroundColorAttributeName:[ALApplozicSettings getColorForNavigationItem],
-                                                                  NSFontAttributeName:[UIFont fontWithName:@"Helvetica-Bold" size:18]
+                                                                  NSFontAttributeName:[UIFont fontWithName:ALApplozicSettings.getFontFace size:15]
                                                                   }];
     [navigationController.navigationBar setBarTintColor: [ALApplozicSettings getColorForNavigation]];
     [navigationController.navigationBar setTintColor:[ALApplozicSettings getColorForNavigationItem]];
@@ -627,6 +654,8 @@
     if(![self.alMessageWrapper getUpdatedMessageArray].count && [ALApplozicSettings getVisibilityNoConversationLabelChatVC])
     {
         [self.noConLabel setText:[ALApplozicSettings getEmptyConversationText]];
+        [self.noConLabel setFont:[UIFont fontWithName:[ALApplozicSettings getFontFace] size:16]];
+
         [self.noConLabel setHidden:NO];
 
         return;
@@ -855,6 +884,7 @@
     if((contact.blockBy || contact.block) && (self.alChannel.type == GROUP_OF_TWO || !self.channelKey))
     {
         [self.label setHidden:YES];
+        [self.typingLabel setHidden:YES];
     }
 }
 
@@ -1097,7 +1127,9 @@
     [titleLabelButton addTarget:self action:@selector(didTapTitleView:) forControlEvents:UIControlEventTouchUpInside];
     titleLabelButton.userInteractionEnabled = YES;
     [titleLabelButton setTitleColor:[ALApplozicSettings getColorForNavigationItem] forState:UIControlStateNormal];
-    
+    [titleLabelButton.titleLabel setFont:[UIFont fontWithName:ALApplozicSettings.getFontFace size:15.0]];
+
+
 //    if(!(self.individualLaunch) || [ALUserDefaultsHandler isServerCallDoneForUserInfoForContact:[self.alContact userId]])
 //    {
         [titleLabelButton setTitle:[self.alContact getDisplayName] forState:UIControlStateNormal];
@@ -1135,7 +1167,9 @@
 {
     ALChannelService *channelService = [[ALChannelService alloc] init];
     self.alChannel = [channelService getChannelByKey:self.channelKey];
-    [titleLabelButton setTitle:self.alChannel.name forState:UIControlStateNormal];
+    NSString *testConcat = [NSString stringWithFormat:@"%@ %@", self.alChannel.name , @" >"];
+
+    [titleLabelButton setTitle:testConcat forState:UIControlStateNormal];
     if([self.alChannel isConversationClosed]){
       [self freezeView:YES];
     }
@@ -1144,7 +1178,9 @@
         NSLog(@"CURENT clientChannelKey :: %@",self.alChannel.clientChannelKey);
         ALContactService * contactService = [ALContactService new];
         self.alContact = [contactService loadContactByKey:@"userId" value:[self.alChannel getReceiverIdInGroupOfTwo]];
-        [titleLabelButton setTitle:[self.alContact getDisplayName] forState:UIControlStateNormal];
+        NSString *testConcat = [NSString stringWithFormat:@"%@ %@", [self.alContact getDisplayName] , @" >"];
+
+        [titleLabelButton setTitle:testConcat forState:UIControlStateNormal];
     }
 }
 
@@ -1549,43 +1585,6 @@
     [soundRecording.bottomAnchor constraintEqualToAnchor:self.sendMessageTextView.bottomAnchor constant:5].active = true;
 }
 
--(void)setUpTeamplateView
-{
-
-    __weak typeof(self) weakSelf = self;
-    NSMutableDictionary *data =  [ALApplozicSettings getTemplateMessages];
-    NSMutableArray<ALTemplateMessageModel *> * messageTemplate = [[NSMutableArray alloc] init];
-    NSArray *keys = [data allKeys];
-
-    for (NSString* key in keys) {
-        NSString *value = [data objectForKey:key];
-        ALTemplateMessageModel* messageModel = [ALTemplateMessageModel alloc] ;
-        messageModel.text = key;
-        messageModel.identifier = value;
-        [messageTemplate addObject:messageModel];
-    }
-    
-    NSArray<ALTemplateMessageModel *> *array = [[NSArray alloc]initWithArray:messageTemplate];
-    
-    ALTemplateMessagesViewModel *model = [[ALTemplateMessagesViewModel alloc] initWithMessageTemplates:(array)];
-    
-    templateMessageView = [[ALTemplateMessagesView alloc]initWithFrame:CGRectZero viewModel:model];
-    [self.view addSubview:templateMessageView ];
-    templateMessageView.messageSelected = ^(NSString * vlaue) {
-        [weakSelf processSendTemplateMessage:vlaue];
-    };
-    [templateMessageView setHidden:NO];
-    [templateMessageView setUserInteractionEnabled:YES];
-    templateMessageView.translatesAutoresizingMaskIntoConstraints = false;
-    [templateMessageView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:7].active = true;
-    [templateMessageView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-7].active = true;
-    [templateMessageView.widthAnchor constraintEqualToAnchor:self.view.widthAnchor constant: -10.0].active = true;
-    [templateMessageView.heightAnchor constraintEqualToConstant:40].active = YES;
-    [templateMessageView .bottomAnchor constraintEqualToAnchor:self.sendMessageTextView.topAnchor constant:-10].active = true;
-    self.tableViewViewBottomConstraint.constant = 40;
-    
-}
-
 -(void)showMicButton
 {
     UIImage* micImage = [ALUtilityClass getImageFromFramworkBundle:@"mic_icon.png"];
@@ -1807,13 +1806,12 @@
 
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    ALChannelService * alChannelService = [ALChannelService new];
-    ALChannel * alChannel = [alChannelService getChannelByKey:self.channelKey];
-    if(self.conversationId && [ALApplozicSettings getContextualChatOption]){
+    if(self.conversationId && [ALApplozicSettings getContextualChatOption])
+    {
         return self.getHeaderView.frame.size.height;
-    }else if(alChannel.metadata!=nil && [alChannel.metadata objectForKey:@"title"]){
-        return self.getContextGroupOfTwoView.frame.size.height;
-    } else {
+    }
+    else
+    {
         return 0;
     }
 }
@@ -1824,49 +1822,7 @@
 
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
-    ALChannelService * alChannelService = [ALChannelService new];
-    ALChannel * alChannel = [alChannelService getChannelByKey:self.channelKey];
-    if(alChannel.metadata!=nil && [alChannel.metadata objectForKey:@"title"]){
-        return self.getContextGroupOfTwoView;
-    }else{
-        return self.getHeaderView;
-    }
-}
-
--(UIView *)getContextGroupOfTwoView
-{
-    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 84)];
-    
-    ALChannelService * alChannelService = [ALChannelService new];
-    
-    ALChannel * alChannel = [alChannelService getChannelByKey:self.channelKey];
-    
-    // Image View ....
-    UIImageView *imageView = [[UIImageView alloc] init];
-    NSURL * url = [NSURL URLWithString: [alChannel.metadata valueForKey:@"link"]];
-    [imageView sd_setImageWithURL:url placeholderImage:nil options:SDWebImageRefreshCached];
-    
-    imageView.frame = CGRectMake(5, 5, 70, 70);
-    imageView.backgroundColor = [UIColor blackColor];
-    [view addSubview:imageView];
-    
-    
-    UILabel * priceUILabel = [[UILabel alloc] init];
-    priceUILabel.text = [alChannel.metadata valueForKey:@"price"];
-    
-    priceUILabel.frame = CGRectMake( imageView.frame.size.width+ 10, imageView.frame.origin.y,
-                                    (view.frame.size.width-imageView.frame.size.width)/2, 50);
-    
-    UILabel * titleUILabel = [[UILabel alloc] init];
-    titleUILabel.text = [alChannel.metadata valueForKey:@"title"];
-    
-    
-    titleUILabel.frame = CGRectMake(imageView.frame.size.width + 10, 58,
-                                    (view.frame.size.width-imageView.frame.size.width)-20, 50);
-    titleUILabel.numberOfLines = 1;
-    [self setLabelViews:@[titleUILabel,priceUILabel] onView:view];
-    
-    return view;
+    return self.getHeaderView;
 }
 
 -(UIView *)getHeaderView
@@ -2170,7 +2126,6 @@
     ALFileMetaInfo *info = [ALFileMetaInfo new];
     
     info.blobKey = nil;
-    info.thumbnailBlobKey=nil;
     info.contentType = @"";
     info.createdAtTime = nil;
     info.key = nil;
@@ -2299,6 +2254,7 @@
 {
     NSLog(@"  deleteMessageFromView in controller...:: ");
     [self.alMessageWrapper removeALMessageFromMessageArray:message];
+    
     [UIView animateWithDuration:1.5 animations:^{
         [self.mTableView reloadData];
     }];
@@ -2306,23 +2262,7 @@
     [self showNoConversationLabel];
 }
 
-
-//=================================================================================================================
-
-#pragma mark - Clear messages from chat view
-
-//=================================================================================================================
-
--(void)clearMessagesFromChatView
-{
-    [[self.alMessageWrapper getUpdatedMessageArray] removeAllObjects];
-    [UIView animateWithDuration:1.5 animations:^{
-        [self.mTableView reloadData];
-    }];
-    
-    [self showNoConversationLabel];
-}
-
+//==============================================================================================================================================
 #pragma mark - MEDIA DELEGATE : DOWNLOAD RETRY DELEGATES
 //==============================================================================================================================================
 
@@ -2430,7 +2370,7 @@
         NSError * theJsonError = nil;
         NSDictionary *theJson = [NSJSONSerialization JSONObjectWithData:connection.mData options:NSJSONReadingMutableLeaves error:&theJsonError];
         
-        if(ALApplozicSettings.isS3StorageServiceEnabled){
+        if(ALApplozicSettings.isCustomStorageServiceEnabled){
             [message.fileMeta populate:theJson];
         }else{
             NSDictionary *fileInfo = [theJson objectForKey:@"fileMeta"];
@@ -2439,37 +2379,16 @@
         ALMessage * almessage =  [ALMessageService processFileUploadSucess:message];
         [self sendMessage:almessage ];
     }
-    else if ([connection.connectionType isEqualToString:@"Thumbnail Downloading"])
+    else
     {
         DB_Message * messageEntity = (DB_Message*)[dbService getMessageByKey:@"key" value:connection.keystring];
         
         NSString * docPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
         NSArray *componentsArray = [messageEntity.fileMetaInfo.name componentsSeparatedByString:@"."];
         NSString *fileExtension = [componentsArray lastObject];
-        NSString * filePath = [docPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_thumbnail_local.%@",connection.keystring,fileExtension]];
-        [connection.mData writeToFile:filePath atomically:YES];
-
-        // UPDATE DB
-        messageEntity.fileMetaInfo.thumbnailFilePath = [NSString stringWithFormat:@"%@_thumbnail_local.%@",connection.keystring,fileExtension];
-        
-        [[ALDBHandler sharedInstance].managedObjectContext save:nil];
-        
-        ALMessage * message = [self getMessageFromViewList:@"key" withValue:connection.keystring];
-        if(message)
-        {
-            message.fileMeta.thumbnailFilePath = messageEntity.fileMetaInfo.thumbnailFilePath;
-            [self.mTableView reloadData];
-        }
-    }else{
-        
-        DB_Message * messageEntity = (DB_Message*)[dbService getMessageByKey:@"key" value:connection.keystring];
-
-        NSString * docPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-        NSArray *componentsArray = [messageEntity.fileMetaInfo.name componentsSeparatedByString:@"."];
-        NSString *fileExtension = [componentsArray lastObject];
         NSString * filePath = [docPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_local.%@",connection.keystring,fileExtension]];
         [connection.mData writeToFile:filePath atomically:YES];
-        
+
         // If 'save video to gallery' is enabled then save to gallery
         if([ALApplozicSettings isSaveVideoToGalleryEnabled]) {
             [self saveVideoToGallery:filePath];
@@ -2491,16 +2410,6 @@
     }
 }
 
--(void) thumbnailDownload:(NSString *) key withThumbnailUrl:(NSString *) thumbnailUrl{
-
-    NSString * theUrlString = [NSString stringWithFormat:@"%@",thumbnailUrl];
-    NSMutableURLRequest * urlRequest =  [ALRequestHandler createGETRequestWithUrlStringWithoutHeader:theUrlString paramString:nil];
-    ALConnection * connection = [[ALConnection alloc] initWithRequest:urlRequest delegate:self startImmediately:YES];
-    connection.keystring = key;
-    connection.connectionType = @"Thumbnail Downloading";
-    [[[ALConnectionQueueHandler sharedConnectionQueueHandler] getCurrentConnectionQueue] addObject:connection];
-}
-    
 //Error
 -(void)connection:(ALConnection *)connection didFailWithError:(NSError *)error
 {
@@ -2818,6 +2727,7 @@
                 {
                     self.isUserBlocked = YES;
                     [self.label setHidden:self.isUserBlocked];
+                    [self.typingLabel setHidden:self.isUserBlocked];
                     NSString * alertText = [NSString stringWithFormat:[@"%@ " stringByAppendingString:NSLocalizedStringWithDefaultValue(@"blockedSuccessfullyText", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle], @"is blocked successfully", @"")], [self.alContact getDisplayName]];
                     [ALUtilityClass showAlertMessage:alertText andTitle:NSLocalizedStringWithDefaultValue(@"userBlock", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle], @"USER BLOCK", @"")  ];
                 }
@@ -2839,15 +2749,6 @@
             launchChat.multipleAttachmentDelegate = self;
             [self.navigationController pushViewController:launchChat animated:YES];
         }]];
-    }
-    
-    if((self.channelKey ||  self.contactIds) && [ALApplozicSettings isDeleteConversationOptionEnabled]){
-        
-        [theController addAction:[UIAlertAction actionWithTitle:NSLocalizedStringWithDefaultValue(@"deleteConversation", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle], @"Delete Conversation" , @"")
-                                                          style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-                                                              [self deleteConversation];
-                                                          }]];
-        
     }
    
     if(!self.channelKey && !self.conversationId && [ALApplozicSettings isAudioVideoEnabled])
@@ -2890,6 +2791,7 @@ style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
 //==============================================================================================================================================
 #pragma mark - ATTACHMENT HANDLERS FOR IMAGE/CONTACT/AUDIO/VIDEO && A/V CALL
 //==============================================================================================================================================
+
 
 -(void)openCamera
 {
@@ -2944,6 +2846,10 @@ style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         [ALUtilityClass showAlertMessage:NSLocalizedStringWithDefaultValue(@"permissionNotAvailableMessageForCamera", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle], @"Camera is not Available !!!", @"") andTitle:NSLocalizedStringWithDefaultValue(@"oppsText", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle], @"OOPS !!!", @"")];
     }
 }
+
+
+
+
 
 -(void)openAudioMic
 {
@@ -3043,32 +2949,6 @@ style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
                                orRoomId:roomID
                            andCallAudio:callForAudio
                       andViewController:self];
-}
-
--(void)deleteConversation{
-    
-    NSString *userId;
-    NSNumber *groupId;
-    
-    if(self.channelKey){
-        groupId = self.channelKey;
-    }else{
-        userId = self.contactIds;
-    }
-    
-    [ALMessageService deleteMessageThread:userId orChannelKey:groupId
-                           withCompletion:^(NSString *string, NSError *error) {
-                               
-                               if(error)
-                               {
-                                   [ALUtilityClass displayToastWithMessage:@"Delete failed"];
-                                   return;
-                               }
-                               
-                               [self clearMessagesFromChatView];
-                               
-                               
-                           }];
 }
 
 //==============================================================================================================================================
@@ -3583,18 +3463,7 @@ style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
     [self setRefreshMainView:TRUE];
     
     double value = [alUserDetail.lastSeenAtTime doubleValue];
-    ALContactService *cnService = [[ALContactService alloc] init];
-    ALContact * contact = [cnService loadContactByKey:@"userId" value:alUserDetail.userId];
-    if(self.channelKey != nil){
-        if(contact.block || contact.blockBy){
-            return;
-        }
-    }else{
-        if(contact.block || contact.blockBy){
-            [self.label setText:@""];
-            return;
-        }
-    }
+    
     if(self.channelKey != nil)
     {
         ALChannelService * channelService = [[ALChannelService alloc] init];
@@ -4027,10 +3896,7 @@ style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
 {
     ALContactService *cntService = [ALContactService new];
     ALContact *contact = [cntService loadContactByKey:@"userId" value:userId];
-    if(contact.block || contact.blockBy){
-        return;
-    }
-
+    
     if(flag)
     {
         NSString * typingText = @"";
@@ -4040,20 +3906,14 @@ style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         }
         else
         {
-            typingText = [NSString stringWithFormat:@"%@", NSLocalizedStringWithDefaultValue(@"userTyping", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle],@"is typing...", @"")];
+            typingText = [NSString stringWithFormat:@"%@ %@", [contact getDisplayName], NSLocalizedStringWithDefaultValue(@"userTyping", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle],@"is typing...", @"")];
         }
-        [self.label setHidden:NO];
-        [self.label setText:typingText];
+        [self.typingLabel setText:typingText];
+        [self.typingLabel setHidden:NO];
     }
     else
     {
-        ALUserDetail *userDetail = [[ALUserDetail alloc] init];
-        userDetail.connected = contact.connected;
-        userDetail.userId = contact.userId;
-        userDetail.lastSeenAtTime = contact.lastSeenAt;
-        userDetail.contactNumber = contact.contactNumber;
-        [self updateLastSeenAtStatus:userDetail];
-    
+        [self.typingLabel setHidden:YES];
     }
 }
 
@@ -4302,6 +4162,7 @@ style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
 }
 
 
+
 //================================================================================================================================
 #pragma mark - REPLY MESSAGE CALL
 //================================================================================================================================
@@ -4309,12 +4170,8 @@ style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
 
 -(void) processMessageReply:(ALMessage *) message
 {
-    
     self.viewHeightConstraints.constant=50;
     self.messageReplyView.hidden =0;
-    if([ALApplozicSettings isTemplateMessageEnabled]) {
-        [templateMessageView setHidden:YES];
-    }
     
     if(message.groupId != 0){
         if([[ALUserDefaultsHandler getUserId] isEqualToString:message.to] || message.to == nil){
@@ -4366,22 +4223,15 @@ style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
             {
                 NSString * docDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
                 NSString * filePath = [docDir stringByAppendingPathComponent:message.imageFilePath];
-                [self showImage: [NSURL fileURLWithPath:filePath]];
+                theUrl = [NSURL fileURLWithPath:filePath];
             }
             else
             {
-                ALMessageClientService * messageClientService = [[ALMessageClientService alloc]init];
-                [messageClientService downloadImageUrl:message.fileMeta.thumbnailBlobKey withCompletion:^(NSString *fileURL, NSError *error) {
-                    if(error)
-                    {
-                        NSLog(@"ERROR GETTING DOWNLOAD URL : %@", error);
-                        return;
-                    }
-                    NSLog(@"ATTACHMENT DOWNLOAD URL : %@", fileURL);
-                    [self showImage: [NSURL URLWithString:fileURL]];
-                }];
-            
+                theUrl = [NSURL URLWithString:message.fileMeta.thumbnailUrl];
             }
+            
+            [self.replyAttachmentPreview sd_setImageWithURL:theUrl];
+            [self.replyIcon setImage:[ALUtilityClass getImageFromFramworkBundle:@"ic_action_camera.png"]];
             
         }else if([message.fileMeta.contentType hasPrefix:@"video"]){
             UIImage * globalThumbnail = [UIImage new];
@@ -4455,11 +4305,6 @@ style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
     
 }
 
--(void) showImage:(NSURL *)url{
-    [self.replyAttachmentPreview sd_setImageWithURL:url];
-    [self.replyIcon setImage:[ALUtilityClass getImageFromFramworkBundle:@"ic_action_camera.png"]];
-}
-
 -(void) scrollToReplyMessage:(ALMessage *)alMessage
 {
     //get reply type Id::
@@ -4528,12 +4373,10 @@ style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
 
 -(void)handleTapGestureForKeyBoard
 {
-    
-        if([self.sendMessageTextView isFirstResponder])
-        {
-            [self.sendMessageTextView resignFirstResponder];
-        }
-
+    if([self.sendMessageTextView isFirstResponder])
+    {
+        [self.sendMessageTextView resignFirstResponder];
+    }
 }
 
 -(void)proccessReloadAndForwardMessage:(ALMessage *)alMessage{
@@ -4579,8 +4422,5 @@ style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
     self.viewHeightConstraints.constant=0;
     self.messageReplyView.hidden =1;
     self.messageReplyId=nil;
-    if([ALApplozicSettings isTemplateMessageEnabled]) {
-        [templateMessageView setHidden:NO];
-    }
 }
 @end

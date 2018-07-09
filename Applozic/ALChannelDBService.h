@@ -48,8 +48,6 @@
 
 -(void)updateChannel:(NSNumber *)channelKey andNewName:(NSString *)newName orImageURL:(NSString *)imageURL orChildKeys:(NSMutableArray *)childKeysList isUpdatingMetaData:(BOOL)flag  orChannelUsers:(NSMutableArray *)channelUsers;
 
--(void)updateChannelMetaData:(NSNumber *)channelKey metaData:(NSMutableDictionary *)newMetaData;
-
 -(void)processArrayAfterSyncCall:(NSMutableArray *)channelArray;
 
 -(NSMutableArray *)getListOfAllUsersInChannel:(NSNumber *)key;

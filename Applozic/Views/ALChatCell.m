@@ -19,7 +19,8 @@
 #import "ALColorUtility.h"
 #import "ALMessageInfoViewController.h"
 #import "ALChatViewController.h"
-#import "ALMessageClientService.h"
+#import "ALUIConstant.h"
+
 
 // Constants
 #define MT_INBOX_CONSTANT "4"
@@ -56,8 +57,7 @@
 @implementation ALChatCell
 {
     CGFloat msgFrameHeight;
-    UITapGestureRecognizer * tapForCustomView, *tapGestureRecognizerForCell;
-    
+    UITapGestureRecognizer * tapForCustomView;
 }
 
 -(instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
@@ -96,7 +96,7 @@
         self.mNameLabel = [[UILabel alloc] init];
         [self.mNameLabel setTextColor:[UIColor whiteColor]];
         [self.mNameLabel setBackgroundColor:[UIColor clearColor]];
-        [self.mNameLabel setFont:[UIFont fontWithName:@"Helvetica" size:18]];
+        [self.mNameLabel setFont:[UIFont fontWithName:[ALApplozicSettings getFontFace] size:18]];
         self.mNameLabel.textAlignment = NSTextAlignmentCenter;
         self.mNameLabel.layer.cornerRadius = self.mNameLabel.frame.size.width/2;
         self.mNameLabel.layer.masksToBounds = YES;
@@ -116,7 +116,7 @@
         [self.contentView addSubview:self.mMessageLabel];
         
         self.mChannelMemberName = [[UILabel alloc] init];
-        self.mChannelMemberName.font = [UIFont fontWithName:@"Helvetica-Bold" size:15];
+        self.mChannelMemberName.font = [UIFont fontWithName:[ALApplozicSettings getFontFace] size:14];// [UIFont fontWithName:@"Helvetica-Bold" size:15];
         self.mChannelMemberName.backgroundColor = [UIColor clearColor];
         [self.contentView addSubview:self.mChannelMemberName];
         
@@ -160,9 +160,8 @@
     }
     
     UITapGestureRecognizer * menuTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(proccessTapForMenu:)];
-    menuTapGesture.cancelsTouchesInView = NO;
-    [self.contentView setUserInteractionEnabled:YES];
     [self.contentView addGestureRecognizer:menuTapGesture];
+    
     return self;
     
 }
@@ -238,7 +237,7 @@
         
         self.mNameLabel.frame = self.mUserProfileImageView.frame;
         [self.mNameLabel setText:[ALColorUtility getAlphabetForProfileImage:receiverName]];
-        
+        //[self.mNameLabel setTextColor:UIColor.grayColor];
         //  ===== Intial bubble View image =========//
         
         CGFloat requiredBubbleWidth = theTextSize.width + BUBBLE_PADDING_WIDTH;
@@ -259,9 +258,13 @@
         if([alMessage getGroupId])
         {
             [self.mChannelMemberName setHidden:NO];
-            
-            [self.mChannelMemberName setTextColor: [ALColorUtility getColorForAlphabet:receiverName]];
-            
+            //[self.mChannelMemberName font[ALApplozicSettings font]]
+           // self.mChannelMemberName.font = [UIFont fontWithName:[ALApplozicSettings getFontFace] size:16];
+            //self.mChannelMemberName.font = [UIFont fontWithName:[ALApplozicSettings getFontFace] size:16];
+
+            //[self.mChannelMemberName setTextColor: [ALColorUtility getColorForAlphabet:receiverName]];
+            [self.self.mChannelMemberName setTextColor:UIColor.grayColor];
+
             if(theTextSize.width < receiverNameSize.width)
             {
                 theTextSize.width = receiverNameSize.width+5;
@@ -317,8 +320,10 @@
         
         if(alContact.contactImageUrl)
         {
-            ALMessageClientService * messageClientService = [[ALMessageClientService alloc]init];
-            [messageClientService downloadImageUrlAndSet:alContact.contactImageUrl imageView:self.mUserProfileImageView defaultImage:@"ic_contact_picture_holo_light.png"];
+            NSURL * theUrl1 = [NSURL URLWithString:alContact.contactImageUrl];
+            
+            [self.mUserProfileImageView sd_setImageWithURL:theUrl1 placeholderImage:[ALUtilityClass getImageFromFramworkBundle:@"ic_contact_picture_holo_light.png"] options:SDWebImageRefreshCached];
+        
         }
         else
         {
@@ -474,20 +479,18 @@
 
 -(void) proccessTapForMenu:(id)tap{
 
-    [self processKeyBoardHideTap];
-    
-     UIMenuItem * messageForward = [[UIMenuItem alloc] initWithTitle:NSLocalizedStringWithDefaultValue(@"forwardOptionTitle", [ALApplozicSettings getLocalizableName],[NSBundle mainBundle], @"Forward", @"") action:@selector(messageForward:)];
+//     UIMenuItem * messageForward = [[UIMenuItem alloc] initWithTitle:NSLocalizedStringWithDefaultValue(@"forwardOptionTitle", [ALApplozicSettings getLocalizableName],[NSBundle mainBundle], @"Forward", @"") action:@selector(messageForward:)];
        UIMenuItem * messageReply = [[UIMenuItem alloc] initWithTitle:NSLocalizedStringWithDefaultValue(@"replyOptionTitle", [ALApplozicSettings getLocalizableName],[NSBundle mainBundle], @"Reply", @"") action:@selector(messageReply:)];
     
     if ([self.mMessage.type isEqualToString:@MT_INBOX_CONSTANT]){
        
-        [[UIMenuController sharedMenuController] setMenuItems: @[messageForward,messageReply]];
+        [[UIMenuController sharedMenuController] setMenuItems: @[messageReply]];
 
     }else if ([self.mMessage.type isEqualToString:@MT_OUTBOX_CONSTANT]){
        
-        UIMenuItem * msgInfo = [[UIMenuItem alloc] initWithTitle:NSLocalizedStringWithDefaultValue(@"infoOptionTitle", [ALApplozicSettings getLocalizableName],[NSBundle mainBundle], @"Info", @"") action:@selector(msgInfo:)];
+//        UIMenuItem * msgInfo = [[UIMenuItem alloc] initWithTitle:NSLocalizedStringWithDefaultValue(@"infoOptionTitle", [ALApplozicSettings getLocalizableName],[NSBundle mainBundle], @"Info", @"") action:@selector(msgInfo:)];
         
-        [[UIMenuController sharedMenuController] setMenuItems: @[msgInfo,messageReply,messageForward]];
+        [[UIMenuController sharedMenuController] setMenuItems: @[messageReply]];
     }
        [[UIMenuController sharedMenuController] update];
     
@@ -606,13 +609,6 @@
     [self.delegate processMessageReply:self.mMessage];
     
 }
-
--(void) processKeyBoardHideTap
-{
-    [self.delegate handleTapGestureForKeyBoard];
-    
-}
-
 -(void)processTapGesture
 {
     [self.delegate processALMessage:self.mMessage];
@@ -620,7 +616,6 @@
 
 -(void)processOpenChat
 {
-    [self processKeyBoardHideTap];
     [self.delegate openUserChat:self.mMessage];
 }
 
@@ -773,6 +768,7 @@
 
 -(BOOL)isMessageReplyMenuEnabled:(SEL) action
 {
+
     
     return ([ALApplozicSettings isReplyOptionEnabled] && action == @selector(messageReply:));
     

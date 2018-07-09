@@ -93,13 +93,8 @@
 
 
 -(BOOL)addListOfContacts:(NSArray *)contacts{
-    return [alContactDBService addListOfContacts:contacts];
-}
+    return [alContactDBService updateListOfContacts:contacts];
 
--(void)addListOfContactsInBackground:(NSArray *)contacts completionHandler:(void(^)(BOOL))response {
-    [alContactDBService addListOfContactsInBackground:contacts completionHandler:^void(BOOL success){
-        response(success);
-    }];
 }
 
 -(BOOL)addContact:(ALContact *)userContact{

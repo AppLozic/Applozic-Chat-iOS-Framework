@@ -301,7 +301,7 @@
 
 -(void)getMessages:(NSMutableArray *)subGroupList
 {
-    if ([self isMessageTableEmpty] || [ALApplozicSettings getCategoryName])  // db is not synced
+    if ([self isMessageTableEmpty])  // db is not synced
     {
         [self fetchAndRefreshFromServer:subGroupList];
         [self syncConactsDB];
@@ -421,14 +421,7 @@
         if([theDictionary[@"groupId"] intValue]==0){
             continue;
         }
-        if([ALApplozicSettings getCategoryName]){
-            ALChannel* channel=  [[ALChannelService new] getChannelByKey:[NSNumber numberWithInt:[theDictionary[@"groupId"] intValue]]];
-            if(![channel isPartOfCategory:[ALApplozicSettings getCategoryName]])
-            {
-                continue;
-            }
-            
-        }
+        
         [theRequest setSortDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"createdAt" ascending:NO]]];
         [theRequest setPredicate:[NSPredicate predicateWithFormat:@"groupId==%d AND deletedFlag == %@ AND contentType != %i AND msgHidden == %@",
                                   [theDictionary[@"groupId"] intValue],@(NO),ALMESSAGE_CONTENT_HIDDEN,@(NO)]];
@@ -537,7 +530,6 @@
     DB_FileMetaInfo * fileMetaInfo = [NSEntityDescription insertNewObjectForEntityForName:@"DB_FileMetaInfo" inManagedObjectContext:theDBHandler.managedObjectContext];
 
     fileMetaInfo.blobKeyString = fileInfo.blobKey;
-    fileMetaInfo.thumbnailBlobKeyString = fileInfo.thumbnailBlobKey;
     fileMetaInfo.contentType = fileInfo.contentType;
     fileMetaInfo.createdAtTime = fileInfo.createdAtTime;
     fileMetaInfo.key = fileInfo.key;
@@ -585,7 +577,6 @@
     if(theEntity.fileMetaInfo){
         ALFileMetaInfo * theFileMeta = [ALFileMetaInfo new];
         theFileMeta.blobKey = theEntity.fileMetaInfo.blobKeyString;
-        theFileMeta.thumbnailBlobKey = theEntity.fileMetaInfo.thumbnailBlobKeyString;
         theFileMeta.contentType = theEntity.fileMetaInfo.contentType;
         theFileMeta.createdAtTime = theEntity.fileMetaInfo.createdAtTime;
         theFileMeta.key = theEntity.fileMetaInfo.key;
@@ -593,7 +584,6 @@
         theFileMeta.size = theEntity.fileMetaInfo.size;
         theFileMeta.userKey = theEntity.fileMetaInfo.suUserKeyString;
         theFileMeta.thumbnailUrl = theEntity.fileMetaInfo.thumbnailUrl;
-        theFileMeta.thumbnailFilePath = theEntity.fileMetaInfo.thumbnailFilePath;
         theMessage.fileMeta = theFileMeta;
     }
     return theMessage;
@@ -606,7 +596,6 @@
     almessage.fileMetaKey = almessage.fileMeta.key;
     
     db_Message.fileMetaInfo.blobKeyString = almessage.fileMeta.blobKey;
-    db_Message.fileMetaInfo.thumbnailBlobKeyString = almessage.fileMeta.thumbnailBlobKey;
     db_Message.fileMetaInfo.contentType = almessage.fileMeta.contentType;
     db_Message.fileMetaInfo.createdAtTime = almessage.fileMeta.createdAtTime;
     db_Message.fileMetaInfo.key = almessage.fileMeta.key;
@@ -616,8 +605,6 @@
     [[ALDBHandler sharedInstance].managedObjectContext save:nil];
     
 }
-
-
 
 -(NSMutableArray *)getMessageListForContactWithCreatedAt:(NSString *)contactId
                                            withCreatedAt:(NSNumber*)createdAt

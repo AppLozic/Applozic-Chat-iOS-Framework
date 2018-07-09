@@ -92,10 +92,6 @@
     [self.mMessageStatusImageView setHidden:YES];
     [self.replyParentView setHidden:YES];
     
-    UITapGestureRecognizer *tapForOpenChat = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(processOpenChat)];
-    tapForOpenChat.numberOfTapsRequired = 1;
-    [self.mUserProfileImageView setUserInteractionEnabled:YES];
-    [self.mUserProfileImageView addGestureRecognizer:tapForOpenChat];
     
     CELL_WIDTH = viewSize.width - 120;
     CELL_HEIGHT = viewSize.width - 220;
@@ -164,8 +160,8 @@
         
         if(alContact.contactImageUrl)
         {
-            ALMessageClientService * messageClientService = [[ALMessageClientService alloc]init];
-            [messageClientService downloadImageUrlAndSet:alContact.contactImageUrl imageView:self.mUserProfileImageView defaultImage:@"ic_contact_picture_holo_light.png"];
+            NSURL * URL = [NSURL URLWithString:alContact.contactImageUrl];
+            [self.mUserProfileImageView sd_setImageWithURL:URL placeholderImage:[ALUtilityClass getImageFromFramworkBundle:@"ic_contact_picture_holo_light.png"]  options:SDWebImageRefreshCached];
         }
         else
         {
@@ -279,21 +275,19 @@
 
 -(void) proccessTapForMenu:(id)tap{
     
-    [self processKeyBoardHideTap];
-
-    UIMenuItem * messageForward = [[UIMenuItem alloc] initWithTitle:NSLocalizedStringWithDefaultValue(@"forwardOptionTitle", [ALApplozicSettings getLocalizableName],[NSBundle mainBundle], @"Forward", @"") action:@selector(messageForward:)];
+//    UIMenuItem * messageForward = [[UIMenuItem alloc] initWithTitle:NSLocalizedStringWithDefaultValue(@"forwardOptionTitle", [ALApplozicSettings getLocalizableName],[NSBundle mainBundle], @"Forward", @"") action:@selector(messageForward:)];
     UIMenuItem * messageReply = [[UIMenuItem alloc] initWithTitle:NSLocalizedStringWithDefaultValue(@"replyOptionTitle", [ALApplozicSettings getLocalizableName],[NSBundle mainBundle], @"Reply", @"") action:@selector(messageReply:)];
     
     if ([self.mMessage.type isEqualToString:@MT_INBOX_CONSTANT]){
         
-        [[UIMenuController sharedMenuController] setMenuItems: @[messageForward,messageReply]];
+        [[UIMenuController sharedMenuController] setMenuItems: @[messageReply]];
         
     }else if ([self.mMessage.type isEqualToString:@MT_OUTBOX_CONSTANT]){
 
         
-        UIMenuItem * msgInfo = [[UIMenuItem alloc] initWithTitle:NSLocalizedStringWithDefaultValue(@"infoOptionTitle", [ALApplozicSettings getLocalizableName],[NSBundle mainBundle], @"Info", @"") action:@selector(msgInfo:)];
+//        UIMenuItem * msgInfo = [[UIMenuItem alloc] initWithTitle:NSLocalizedStringWithDefaultValue(@"infoOptionTitle", [ALApplozicSettings getLocalizableName],[NSBundle mainBundle], @"Info", @"") action:@selector(msgInfo:)];
         
-        [[UIMenuController sharedMenuController] setMenuItems: @[msgInfo,messageReply,messageForward]];
+        [[UIMenuController sharedMenuController] setMenuItems: @[messageReply]];
     }
     [[UIMenuController sharedMenuController] update];
     
@@ -427,10 +421,6 @@
     return ([ALApplozicSettings isForwardOptionEnabled] && action == @selector(messageForward:));
 }
 
--(void) processKeyBoardHideTap
-{
-    [self.delegate handleTapGestureForKeyBoard];
-}
 
 -(void) messageReply:(id)sender
 {

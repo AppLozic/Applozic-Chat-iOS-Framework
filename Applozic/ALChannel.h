@@ -14,7 +14,6 @@
 #define CHANNEL_SPECIAL_CASE 7
 #define CHANNEL_DEFAULT_MUTE @"MUTE"
 #define CHANNEL_CONVERSATION_STATUS @"CONVERSATION_STATUS"
-#define CATEGORY @"AL_CATEGORY"
 
 
 /*********************
@@ -34,6 +33,7 @@ typedef enum
     CONTACT_GROUP = 9,
     BROADCAST_ONE_BY_ONE = 106
 } CHANNEL_TYPE;
+
 
 @interface ALChannel : ALJson
 
@@ -67,6 +67,5 @@ typedef enum
 -(NSString*)getReceiverIdInGroupOfTwo;
 
 -(NSMutableDictionary *)getMetaDataDictionary:(NSString *)string;
--(BOOL)isPartOfCategory:(NSString*)category;
 
 @end

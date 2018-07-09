@@ -13,7 +13,6 @@
 @interface AlChannelFeedResponse : ALAPIResponse
 
 @property (nonatomic, strong) ALChannel *alChannel;
-@property (nonatomic, strong) NSDictionary *errorResponse;
 
 -(instancetype)initWithJSONString:(NSString *)JSONString;
 

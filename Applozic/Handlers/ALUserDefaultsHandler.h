@@ -59,11 +59,8 @@
 #define KEY_PREFIX @"com.applozic.userdefault"
 #define GROUP_FILTER_LAST_SYNC_TIME @"com.applozic.GROUP_FILTER_LAST_SYNC_TIME"
 #define AL_USER_ROLE_TYPE @"com.applozic.userdefault.AL_USER_ROLE_TYPE"
-#define AL_USER_PUSH_NOTIFICATION_FORMATE @"com.applozic.userdefault.AL_USER_PUSH_NOTIFICATION_FORMATE"
-#define USER_MQTT_ENCRYPTION_KEY @"com.applozic.userdefault.USER_MQTT_ENCRYPTION_KEY"
 
 #import <Foundation/Foundation.h>
-#import "ALApplozicSettings.h"
 
 @interface ALUserDefaultsHandler : NSObject
 
@@ -246,11 +243,5 @@
 
 +(void)setUserRoleType:(short)type;
 +(short)getUserRoleType;
-
-+(void)setPushNotificationFormat:(short)type;
-+(short)getPushNotificationFormat;
-+(void)setUserEncryption:(NSString*)encryptionKey;
-+(NSString*)getUserEncryptionKey;
-
 
 @end

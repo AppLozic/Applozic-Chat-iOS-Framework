@@ -28,8 +28,6 @@
 
 -(BOOL)addListOfContacts:(NSArray *)contacts;
 
--(void)addListOfContactsInBackground:(NSArray *)contacts completionHandler:(void(^)(BOOL))response;
-
 -(BOOL)addContact:(ALContact *)userContact;
 
 - (ALContact *)loadContactByKey:(NSString *) key value:(NSString*) value;

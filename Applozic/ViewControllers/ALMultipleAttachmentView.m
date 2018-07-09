@@ -28,7 +28,13 @@
 }
 
 static NSString * const reuseIdentifier = @"collectionCell";
+    
+- (IBAction)send:(id)sender {
+    
+    [self sendButtonAction];
 
+}
+    
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -46,10 +52,13 @@ static NSString * const reuseIdentifier = @"collectionCell";
     
     [self setTitle: NSLocalizedStringWithDefaultValue(@"attachmentViewTitle", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle], @"Attachment", @"")];
     
-    self.sendButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedStringWithDefaultValue(@"sendText", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle], @"Send" , @"")
-                                                       style:UIBarButtonItemStylePlain
-                                                      target:self
-                                                      action:@selector(sendButtonAction)];
+//
+//    self.sendButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedStringWithDefaultValue(@"sendText", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle], @"Send" , @"")
+//
+//
+//                                                       style:UIBarButtonItemStylePlain
+//                                                      target:self
+//                                                      action:@selector(sendButtonAction)];
     
     
 }
@@ -58,12 +67,20 @@ static NSString * const reuseIdentifier = @"collectionCell";
 {
     [super didReceiveMemoryWarning];
 }
-
+- (IBAction)back:(id)sender {
+    UIViewController *  uiController = [self.navigationController popViewControllerAnimated:YES];
+    if(!uiController)
+    {
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }
+}
+    
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:YES];
     
-    [self.navigationItem setRightBarButtonItem:self.sendButton];
+    //[self.navigationItem setRightBarButtonItem:self.sendButton];
+//    [self.navigationItem setLeftBarButtonItem:self.sendButton];
     [self navigationBarColor];
 }
 

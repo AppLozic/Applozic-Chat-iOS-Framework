@@ -29,7 +29,6 @@
 #import "ALPushAssist.h"
 #import "ALSubViewController.h"
 #import "ALApplozicSettings.h"
-#import "ALMessageClientService.h"
 
 #define DEFAULT_TOP_LANDSCAPE_CONSTANT -34
 #define DEFAULT_TOP_PORTRAIT_CONSTANT -64
@@ -505,8 +504,11 @@
                     ALChannel * channel = (ALChannel *)[self.filteredContactList objectAtIndex:indexPath.row];
                     newContactCell.contactPersonName.text = [channel name];
                     [newContactCell.contactPersonImageView setImage:[UIImage imageNamed:@"applozic_group_icon.png"]];
-                    ALMessageClientService * messageClientService = [[ALMessageClientService alloc]init];
-                    [messageClientService downloadImageUrlAndSet:channel.channelImageURL imageView:newContactCell.contactPersonImageView defaultImage:nil];
+                    NSURL * imageUrl = [NSURL URLWithString:channel.channelImageURL];
+                    if(imageUrl.path.length)
+                    {
+                        [newContactCell.contactPersonImageView sd_setImageWithURL:imageUrl placeholderImage:nil options:SDWebImageRefreshCached];
+                    }
                     [nameIcon setHidden:YES];
                 }
                 else

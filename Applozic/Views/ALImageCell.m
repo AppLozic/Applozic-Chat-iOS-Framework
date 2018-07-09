@@ -24,9 +24,6 @@
 #import "ALDataNetworkConnection.h"
 #import "UIImage+MultiFormat.h"
 #import "ALShowImageViewController.h"
-#import "ALMessageClientService.h"
-#import "ALConnection.h"
-#import "ALConnectionQueueHandler.h"
 
 // Constants
 #define MT_INBOX_CONSTANT "4"
@@ -135,16 +132,12 @@ UIViewController * modalCon;
                                                maxWidth:viewSize.width - MAX_WIDTH_DATE
                                                    font:self.imageWithText.font.fontName
                                                fontSize:self.imageWithText.font.pointSize];
-    
+    self.mChannelMemberName.font = [UIFont fontWithName:[ALApplozicSettings getFontFace] size:14];// [UIFont fontWithName:@"Helvetica-Bold" size:15];
+
     [self.mChannelMemberName setHidden:YES];
     [self.mNameLabel setHidden:YES];
     [self.imageWithText setHidden:YES];
     [self.mMessageStatusImageView setHidden:YES];
-
-    UITapGestureRecognizer *tapForOpenChat = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(processOpenChat)];
-    tapForOpenChat.numberOfTapsRequired = 1;
-    [self.mUserProfileImageView setUserInteractionEnabled:YES];
-    [self.mUserProfileImageView addGestureRecognizer:tapForOpenChat];
     
     if ([alMessage.type isEqualToString:@MT_INBOX_CONSTANT]) { //@"4" //Recieved Message
         
@@ -279,8 +272,8 @@ UIViewController * modalCon;
         
         if(alContact.contactImageUrl)
         {
-            ALMessageClientService * messageClientService = [[ALMessageClientService alloc]init];
-            [messageClientService downloadImageUrlAndSet:alContact.contactImageUrl imageView:self.mUserProfileImageView defaultImage:@"ic_contact_picture_holo_light.png"];
+            NSURL * theUrl1 = [NSURL URLWithString:alContact.contactImageUrl];
+            [self.mUserProfileImageView sd_setImageWithURL:theUrl1 placeholderImage: [ALUtilityClass getImageFromFramworkBundle:@"ic_contact_picture_holo_light.png"] options:SDWebImageRefreshCached];
         }
         else
         {
@@ -435,58 +428,37 @@ UIViewController * modalCon;
     {
         NSString * docDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
         NSString * filePath = [docDir stringByAppendingPathComponent:alMessage.imageFilePath];
-        [self setInImageView:[NSURL fileURLWithPath:filePath]];
+        theUrl = [NSURL fileURLWithPath:filePath];
     }
     else
     {
-        if(alMessage.fileMeta.thumbnailFilePath == nil){
-            ALMessageClientService * messageClientService = [[ALMessageClientService alloc]init];
-            [messageClientService downloadImageThumbnailUrl:alMessage withCompletion:^(NSString *fileURL, NSError *error) {
-             
-                NSLog(@"ATTACHMENT DOWNLOAD URL : %@", fileURL);
-                if(error == nil){
-                    [self.delegate thumbnailDownload:alMessage.key withThumbnailUrl:fileURL];
-                }
-            
-            }];
-        }else{
-            
-            NSString * docDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-            NSString * filePath = [docDir stringByAppendingPathComponent:alMessage.fileMeta.thumbnailFilePath];
-            [self setInImageView:[NSURL fileURLWithPath:filePath]];
-        }
-        
+        theUrl = [NSURL URLWithString:alMessage.fileMeta.thumbnailUrl];
     }
+    
+    [self.mImageView sd_setImageWithURL:theUrl];
     
     return self;
     
 }
 
--(void) setInImageView:(NSURL*)url{
-    
-     [self.mImageView sd_setImageWithPreviousCachedImageWithURL:url placeholderImage:nil options:0 progress:nil completed:nil];
-
-}
 
 #pragma mark - Menu option tap Method -
 
 -(void) proccessTapForMenu:(id)tap{
     
-    [self processKeyBoardHideTap];
-
-    UIMenuItem * messageForward = [[UIMenuItem alloc] initWithTitle:NSLocalizedStringWithDefaultValue(@"forwardOptionTitle", [ALApplozicSettings getLocalizableName],[NSBundle mainBundle], @"Forward", @"") action:@selector(messageForward:)];
+//    UIMenuItem * messageForward = [[UIMenuItem alloc] initWithTitle:NSLocalizedStringWithDefaultValue(@"forwardOptionTitle", [ALApplozicSettings getLocalizableName],[NSBundle mainBundle], @"Forward", @"") action:@selector(messageForward:)];
     UIMenuItem * messageReply = [[UIMenuItem alloc] initWithTitle:NSLocalizedStringWithDefaultValue(@"replyOptionTitle", [ALApplozicSettings getLocalizableName],[NSBundle mainBundle], @"Reply", @"") action:@selector(messageReply:)];
     
     if ([self.mMessage.type isEqualToString:@MT_INBOX_CONSTANT]){
         
-        [[UIMenuController sharedMenuController] setMenuItems: @[messageForward,messageReply]];
+        [[UIMenuController sharedMenuController] setMenuItems: @[messageReply]];
         
     }else if ([self.mMessage.type isEqualToString:@MT_OUTBOX_CONSTANT]){
 
         
-        UIMenuItem * msgInfo = [[UIMenuItem alloc] initWithTitle:NSLocalizedStringWithDefaultValue(@"infoOptionTitle", [ALApplozicSettings getLocalizableName],[NSBundle mainBundle], @"Info", @"") action:@selector(msgInfo:)];
+//        UIMenuItem * msgInfo = [[UIMenuItem alloc] initWithTitle:NSLocalizedStringWithDefaultValue(@"infoOptionTitle", [ALApplozicSettings getLocalizableName],[NSBundle mainBundle], @"Info", @"") action:@selector(msgInfo:)];
         
-        [[UIMenuController sharedMenuController] setMenuItems: @[msgInfo,messageReply,messageForward]];
+        [[UIMenuController sharedMenuController] setMenuItems: @[messageReply]];
     }
     [[UIMenuController sharedMenuController] update];
     
@@ -553,14 +525,15 @@ UIViewController * modalCon;
     UIStoryboard * applozicStoryboard = [UIStoryboard storyboardWithName:@"Applozic" bundle:[NSBundle bundleForClass:ALChatViewController.class]];
     
     ALShowImageViewController * alShowImageViewController = [applozicStoryboard instantiateViewControllerWithIdentifier:@"showImageViewController"];
-    alShowImageViewController.view.backgroundColor = [UIColor lightGrayColor];
+    alShowImageViewController.view.backgroundColor = [UIColor whiteColor];
     alShowImageViewController.view.userInteractionEnabled = YES;
     
     [alShowImageViewController setImage:self.mImageView.image];
     [alShowImageViewController setAlMessage:self.mMessage];
     
-    [self.delegate showFullScreen:alShowImageViewController];
+    //[self.delegate showFullScreen:alShowImageViewController];
     
+    [self.delegate loadViewForMedia:alShowImageViewController];
     return;
 }
 
@@ -661,11 +634,6 @@ UIViewController * modalCon;
     }];
 }
 
--(void) processKeyBoardHideTap
-{
-    [self.delegate handleTapGestureForKeyBoard];
-}
-
 -(BOOL)isForwardMenuEnabled:(SEL) action;
 {
     return ([ALApplozicSettings isForwardOptionEnabled] && action == @selector(messageForward:));
@@ -676,12 +644,6 @@ UIViewController * modalCon;
 
     return ([ALApplozicSettings isReplyOptionEnabled] && action == @selector(messageReply:));
     
-}
-
--(void)processOpenChat
-{
-    [self processKeyBoardHideTap];
-    [self.delegate openUserChat:self.mMessage];
 }
 
 @end

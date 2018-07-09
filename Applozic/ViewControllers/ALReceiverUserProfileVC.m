@@ -10,7 +10,6 @@
 #import "ALUtilityClass.h"
 #import "UIImageView+WebCache.h"
 #import "ALApplozicSettings.h"
-#import "ALMessageClientService.h"
 
 @interface ALReceiverUserProfileVC ()
 
@@ -57,8 +56,8 @@
     [self.profileImageView setImage:[ALUtilityClass getImageFromFramworkBundle:@"ic_contact_picture_holo_light.png"]];
     if(self.alContact.contactImageUrl)
     {
-        ALMessageClientService * messageClientService = [[ALMessageClientService alloc]init];
-        [messageClientService downloadImageUrlAndSet:_alContact.contactImageUrl imageView:_profileImageView defaultImage:nil];
+        NSURL * theUrl = [NSURL URLWithString:self.alContact.contactImageUrl];
+        [self.profileImageView sd_setImageWithURL:theUrl placeholderImage:nil options:SDWebImageRefreshCached];
     }
     
     [self.callButton setEnabled:NO];

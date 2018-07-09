@@ -110,7 +110,6 @@ FOUNDATION_EXPORT const unsigned char ApplozicVersionString[];
 #import <Applozic/ALChannelMsgCell.h>
 #import <Applozic/ALChannelUser.h>
 #import <Applozic/ALVOIPCell.h>
-#import <Applozic/ALApplicationInfo.h>
 #import <Applozic/MQTTDecoder.h>
 #import <Applozic/MQTTInMemoryPersistence.h>
 #import <Applozic/MQTTLog.h>

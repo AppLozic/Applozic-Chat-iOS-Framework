@@ -30,20 +30,8 @@
 - (id)init {
     
     if (self = [super init]) {
-
-
-    }
-
-    if (@available(iOS 10.0, *)) {
-        NSPersistentContainer * container = [[NSPersistentContainer alloc] initWithName:@"AppLozic" managedObjectModel:self.managedObjectModel];
-
-        [container loadPersistentStoresWithCompletionHandler:^(NSPersistentStoreDescription* store, NSError * error) {
-            NSLog(@"pers url: %@",container.persistentStoreCoordinator.persistentStores.firstObject.URL);
-            if(error != nil) {
-                NSLog(@"%@", error);
-            }
-        }];
-        self.persistentContainer = container;
+        
+        
     }
     return self;
 }
@@ -146,7 +134,7 @@
     _managedObjectContext = [[NSManagedObjectContext alloc] init];
     
     [_managedObjectContext setPersistentStoreCoordinator:coordinator];
-    [_managedObjectContext setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
+    
     return _managedObjectContext;
 }
 
