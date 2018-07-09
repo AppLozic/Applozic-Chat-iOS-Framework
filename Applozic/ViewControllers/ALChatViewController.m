@@ -4175,7 +4175,7 @@ style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
     
     if(message.groupId != 0){
         if([[ALUserDefaultsHandler getUserId] isEqualToString:message.to] || message.to == nil){
-            self.replyUserName.text = @"You";
+            self.replyUserName.text = @"انت";
             
         }else{
             ALContactDBService  *aLContactDBService = [ALContactDBService new];
@@ -4186,7 +4186,7 @@ style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
     }else{
         
         if([message.type isEqualToString:OUT_BOX]){
-            self.replyUserName.text = @"You";
+            self.replyUserName.text = @"انت";
         }else{
             ALContactDBService  *aLContactDBService = [ALContactDBService new];
             ALContact * contact = [aLContactDBService loadContactByKey:@"userId" value:message.to];
@@ -4205,7 +4205,7 @@ style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
                 self.replyMessageText.text = message.message;
                 
             }else{
-                self.replyMessageText.text = @"Audio";
+                self.replyMessageText.text = @"صوت";
             }
             
             [self.replyAttachmentPreview setHidden:YES];
@@ -4215,7 +4215,7 @@ style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
             if([message.message length] != 0){
                 self.replyMessageText.text = message.message;
             }else{
-                self.replyMessageText.text = @"Image";
+                self.replyMessageText.text = @"صورة";
             }
             
             NSURL *theUrl = nil;
@@ -4246,7 +4246,7 @@ style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
                 self.replyMessageText.text = message.message;
                 
             }else{
-                self.replyMessageText.text = @"Video";
+                self.replyMessageText.text = @"فيديو";
             }
             
             [self.replyAttachmentPreview setImage:globalThumbnail];
@@ -4270,14 +4270,14 @@ style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
             if([message.message length] != 0){
                 self.replyMessageText.text = message.message;
             }else{
-                self.replyMessageText.text = @"Attachment";
+                self.replyMessageText.text = @"ملف";
             }
             [self.replyIcon setImage:[ALUtilityClass getImageFromFramworkBundle:@"documentReceive.png"]];
         }
     }else  if(message.contentType == ALMESSAGE_CONTENT_LOCATION){
         
         [self.replyAttachmentPreview setHidden:NO];
-        self.replyMessageText.text = @"Location";
+        self.replyMessageText.text = @"موقع";
         [self.replyIcon setHidden:NO];
         
         NSURL *theUrl = nil;
