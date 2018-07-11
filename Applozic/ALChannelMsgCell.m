@@ -20,7 +20,7 @@
 {
     [super populateCell:alMessage viewSize:viewSize];
     
-    [self.mMessageLabel setFont:[UIFont fontWithName:@"Helvetica" size:CH_MESSAGE_TEXT_SIZE]];
+    [self.mMessageLabel setFont:[UIFont fontWithName:@"DroidArabicKufi" size:CH_MESSAGE_TEXT_SIZE]];
     
     [self.mMessageLabel setTextAlignment:NSTextAlignmentCenter];
     [self.mMessageLabel setText:alMessage.message];

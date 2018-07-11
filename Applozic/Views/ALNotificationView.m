@@ -198,10 +198,10 @@
 
     UIImage *appIcon = [UIImage imageNamed: [[[[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIcons"] objectForKey:@"CFBundlePrimaryIcon"] objectForKey:@"CFBundleIconFiles"] objectAtIndex:0]];
 
-    [[TSMessageView appearance] setTitleFont:[UIFont boldSystemFontOfSize:17]];
-    [[TSMessageView appearance] setContentFont:[UIFont systemFontOfSize:13]];
-    [[TSMessageView appearance] setTitleFont:[UIFont fontWithName:@"Helvetica Neue" size:18.0]];
-    [[TSMessageView appearance] setContentFont:[UIFont fontWithName:@"Helvetica Neue" size:14]];
+    //[[TSMessageView appearance] setTitleFont:[UIFont boldSystemFontOfSize:17]];
+    //[[TSMessageView appearance] setContentFont:[UIFont systemFontOfSize:13]];
+    [[TSMessageView appearance] setTitleFont:[UIFont fontWithName:ALApplozicSettings.getFontFace size:16.0]];
+    [[TSMessageView appearance] setContentFont:[UIFont fontWithName:ALApplozicSettings.getFontFace size:14]];
     [[TSMessageView appearance] setTitleTextColor:[UIColor whiteColor]];
     [[TSMessageView appearance] setContentTextColor:[UIColor whiteColor]];
 
@@ -296,10 +296,8 @@
     
     UIImage *appIcon = [UIImage imageNamed: [[[[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIcons"] objectForKey:@"CFBundlePrimaryIcon"] objectForKey:@"CFBundleIconFiles"] objectAtIndex:0]];
     
-    [[TSMessageView appearance] setTitleFont:[UIFont boldSystemFontOfSize:17]];
-    [[TSMessageView appearance] setContentFont:[UIFont systemFontOfSize:13]];
-    [[TSMessageView appearance] setTitleFont:[UIFont fontWithName:@"Helvetica Neue" size:18.0]];
-    [[TSMessageView appearance] setContentFont:[UIFont fontWithName:@"Helvetica Neue" size:14]];
+    [[TSMessageView appearance] setTitleFont:[UIFont fontWithName:ALApplozicSettings.getFontFace size:16.0]];
+    [[TSMessageView appearance] setContentFont:[UIFont fontWithName:ALApplozicSettings.getFontFace size:14]];
     [[TSMessageView appearance] setTitleTextColor:[UIColor whiteColor]];
     [[TSMessageView appearance] setContentTextColor:[UIColor whiteColor]];
     
@@ -443,12 +441,15 @@
 -(void)showGroupLeftMessage
 {
     [[TSMessageView appearance] setTitleTextColor:[UIColor whiteColor]];
+    [[TSMessageView appearance] setTitleFont:[UIFont fontWithName:ALApplozicSettings.getFontFace size:16.0]];
+
     [TSMessage showNotificationWithTitle: NSLocalizedStringWithDefaultValue(@"youHaveLeftGroupMesasge", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle], @"You have left this group", @"") type:TSMessageNotificationTypeWarning];
 }
 
 -(void)noDataConnectionNotificationView
 {
     [[TSMessageView appearance] setTitleTextColor:[UIColor whiteColor]];
+    [[TSMessageView appearance] setTitleFont:[UIFont fontWithName:ALApplozicSettings.getFontFace size:16.0]];
     [TSMessage showNotificationWithTitle: NSLocalizedStringWithDefaultValue(@"noInternetMessage", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle], @"No Internet Connectivity", @"")
                                     type:TSMessageNotificationTypeWarning];
 }
@@ -456,6 +457,7 @@
 +(void)showLocalNotification:(NSString *)text
 {
     [[TSMessageView appearance] setTitleTextColor:[UIColor whiteColor]];
+    [[TSMessageView appearance] setTitleFont:[UIFont fontWithName:ALApplozicSettings.getFontFace size:16.0]];
     [TSMessage showNotificationWithTitle:text type:TSMessageNotificationTypeWarning];
 }
 
@@ -463,10 +465,11 @@
 {
     UIImage *appIcon = [UIImage imageNamed: [[[[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIcons"] objectForKey:@"CFBundlePrimaryIcon"] objectForKey:@"CFBundleIconFiles"] objectAtIndex:0]];
     
-    [[TSMessageView appearance] setTitleFont:[UIFont boldSystemFontOfSize:17]];
-    [[TSMessageView appearance] setContentFont:[UIFont systemFontOfSize:13]];
-    [[TSMessageView appearance] setTitleFont:[UIFont fontWithName:@"Helvetica Neue" size:18.0]];
-    [[TSMessageView appearance] setContentFont:[UIFont fontWithName:@"Helvetica Neue" size:14]];
+    //[[TSMessageView appearance] setTitleFont:[UIFont boldSystemFontOfSize:17]];
+
+    //[[TSMessageView appearance] setContentFont:[UIFont systemFontOfSize:13]];
+    [[TSMessageView appearance] setTitleFont:[UIFont fontWithName:ALApplozicSettings.getFontFace size:16.0]];
+    [[TSMessageView appearance] setContentFont:[UIFont fontWithName:ALApplozicSettings.getFontFace size:14]];
     [[TSMessageView appearance] setTitleTextColor:[UIColor whiteColor]];
     [[TSMessageView appearance] setContentTextColor:[UIColor whiteColor]];
     [[TSMessageView appearance] setDuration:10.0];
@@ -480,6 +483,7 @@
 +(void)showNotification:(NSString *)message
 {
     [[TSMessageView appearance] setTitleTextColor:[UIColor whiteColor]];
+    [[TSMessageView appearance] setTitleFont:[UIFont fontWithName:ALApplozicSettings.getFontFace size:16.0]];
     [TSMessage showNotificationWithTitle:message type:TSMessageNotificationTypeWarning];
 }
 

@@ -189,7 +189,7 @@
         
         UIWindow * keyWindow = [[UIApplication sharedApplication] keyWindow];
         UILabel * toastView = [[UILabel alloc] init];
-        [toastView setFont:[UIFont fontWithName:@"Helvetica" size:14]];
+        [toastView setFont:[UIFont fontWithName:@"DroidArabicKufi" size:14]];
         toastView.text = toastMessage;
         [toastView setTextColor:[ALApplozicSettings getColorForToastText]];
         toastView.backgroundColor = [ALApplozicSettings getColorForToastBackground];
@@ -246,8 +246,8 @@
     ALPushAssist* top=[[ALPushAssist alloc] init];
     UIImage *appIcon = [UIImage imageNamed: [[[[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIcons"] objectForKey:@"CFBundlePrimaryIcon"] objectForKey:@"CFBundleIconFiles"] objectAtIndex:0]];
     
-    [[TSMessageView appearance] setTitleFont:[UIFont fontWithName:@"Helvetica Neue" size:18.0]];
-    [[TSMessageView appearance] setContentFont:[UIFont fontWithName:@"Helvetica Neue" size:14]];
+    [[TSMessageView appearance] setTitleFont:[UIFont fontWithName:ALApplozicSettings.getFontFace size:18.0]];
+    [[TSMessageView appearance] setContentFont:[UIFont fontWithName:ALApplozicSettings.getFontFace size:14]];
     [[TSMessageView appearance] setTitleTextColor:[UIColor whiteColor]];
     [[TSMessageView appearance] setContentTextColor:[UIColor whiteColor]];
    
@@ -295,8 +295,8 @@
     ALPushAssist* top=[[ALPushAssist alloc] init];
     UIImage *appIcon = [UIImage imageNamed: [[[[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIcons"] objectForKey:@"CFBundlePrimaryIcon"] objectForKey:@"CFBundleIconFiles"] objectAtIndex:0]];
 
-    [[TSMessageView appearance] setTitleFont:[UIFont fontWithName:@"Helvetica Neue" size:18.0]];
-    [[TSMessageView appearance] setContentFont:[UIFont fontWithName:@"Helvetica Neue" size:14]];
+    [[TSMessageView appearance] setTitleFont:[UIFont fontWithName:ALApplozicSettings.getFontFace size:18.0]];
+    [[TSMessageView appearance] setContentFont:[UIFont fontWithName:ALApplozicSettings.getFontFace size:14]];
     [[TSMessageView appearance] setTitleTextColor:[UIColor whiteColor]];
     [[TSMessageView appearance] setContentTextColor:[UIColor whiteColor]];
 

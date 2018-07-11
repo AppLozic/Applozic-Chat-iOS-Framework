@@ -686,7 +686,7 @@
 +(NSString *)getCustomMessageFont
 {
     NSString * font = [[NSUserDefaults standardUserDefaults] valueForKey:CUSTOM_MSG_FONT];
-    return font ? font : @"Helvetica";
+    return font ? font : @"DroidArabicKufi";
 }
 
 +(void)setGroupInfoDisabled:(BOOL)flag

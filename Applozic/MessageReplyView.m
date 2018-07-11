@@ -16,7 +16,7 @@
 #import "ALDataNetworkConnection.h"
 
 #define REPLY_VIEW_PADDING 5
-#define FONT_NAME @"Helvetica"
+#define FONT_NAME @"DroidArabicKufi"
 #define FONT_SIZE 13
 #define ATTACHMENT_PREVIEW_WIDTH 60
 

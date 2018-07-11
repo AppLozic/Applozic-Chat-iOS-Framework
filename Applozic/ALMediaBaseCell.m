@@ -35,7 +35,7 @@
         self.mNameLabel = [[UILabel alloc] init];
         [self.mNameLabel setTextColor:[UIColor whiteColor]];
         [self.mNameLabel setBackgroundColor:[UIColor clearColor]];
-        [self.mNameLabel setFont:[UIFont fontWithName:@"Helvetica" size:18]];
+        [self.mNameLabel setFont:[UIFont fontWithName:@"DroidArabicKufi" size:18]];
         self.mNameLabel.textAlignment = NSTextAlignmentCenter;
         self.mNameLabel.layer.cornerRadius = self.mNameLabel.frame.size.width/2;
         self.mNameLabel.layer.masksToBounds = YES;
