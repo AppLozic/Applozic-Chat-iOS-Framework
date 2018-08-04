@@ -10,6 +10,7 @@
 #import <CoreData/NSManagedObject.h>
 #import "ALJson.h"
 #import "ALConversationProxy.h"
+#define CATEGORY @"AL_CATEGORY"
 
 #define CHANNEL_SPECIAL_CASE 7
 #define CHANNEL_DEFAULT_MUTE @"MUTE"
