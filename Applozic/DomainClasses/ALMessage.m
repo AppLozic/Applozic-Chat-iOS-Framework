@@ -201,13 +201,10 @@
     {
         formattedDateStr = [ALUtilityClass formatTimestamp:[self.createdAtTime doubleValue]/1000 toFormat:formattedStr];
     }
-<<<<<<< HEAD
     
     return [formattedDateStr stringByReplacingOccurrencesOfString:@"m" withString:@"دقيقة"];
-=======
 
     return formattedDateStr;
->>>>>>> upstream/master
 }
 
 -(NSString *)getCreatedAtTimeChat:(BOOL)today {

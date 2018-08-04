@@ -499,17 +499,14 @@
                 {
                     ALChannel * channel = (ALChannel *)[self.filteredContactList objectAtIndex:indexPath.row];
                     newContactCell.contactPersonName.text = [channel name];
-<<<<<<< HEAD
                     [newContactCell.contactPersonImageView setImage:[UIImage imageNamed:@"applozic_group_icon.png"]];
                     NSURL * imageUrl = [NSURL URLWithString:channel.channelImageURL];
                     if(imageUrl.path.length)
                     {
                         [newContactCell.contactPersonImageView sd_setImageWithURL:imageUrl placeholderImage:nil options:SDWebImageRefreshCached];
                     }
-=======
                     ALMessageClientService * messageClientService = [[ALMessageClientService alloc]init];
                     [messageClientService downloadImageUrlAndSet:channel.channelImageURL imageView:newContactCell.contactPersonImageView defaultImage:@"applozic_group_icon.png"];
->>>>>>> upstream/master
                     [nameIcon setHidden:YES];
                 }
                 else

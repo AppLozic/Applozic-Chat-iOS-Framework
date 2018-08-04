@@ -52,8 +52,6 @@ static ALMessageClientService *alMsgClientService;
                        
             }];
             [[NSNotificationCenter defaultCenter] postNotificationName:CONVERSATION_CALL_COMPLETED object:nil userInfo:nil];
-<<<<<<< HEAD
-=======
             
             if(alMessageListResponse.messageList.count){
                 
@@ -83,7 +81,6 @@ static ALMessageClientService *alMsgClientService;
                     }
                 }
             }
->>>>>>> upstream/master
         }
         else{
             NSLog(@"Message List Response Nil");

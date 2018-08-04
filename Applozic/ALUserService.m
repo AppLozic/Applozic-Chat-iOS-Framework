@@ -52,12 +52,9 @@
         return;
     }
     
-<<<<<<< HEAD
     
     for(NSString* strr in contactIdsArr){
-=======
     for(NSString *strr in contactIdsArr){
->>>>>>> upstream/master
         [repString appendString:strr];
     }
     

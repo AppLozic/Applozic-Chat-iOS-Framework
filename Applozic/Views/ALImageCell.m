@@ -132,25 +132,19 @@ UIViewController * modalCon;
                                                maxWidth:viewSize.width - MAX_WIDTH_DATE
                                                    font:self.imageWithText.font.fontName
                                                fontSize:self.imageWithText.font.pointSize];
-<<<<<<< HEAD
     self.mChannelMemberName.font = [UIFont fontWithName:[ALApplozicSettings getFontFace] size:14];// [UIFont fontWithName:@"Helvetica-Bold" size:15];
-=======
->>>>>>> upstream/master
 
     [self.mChannelMemberName setHidden:YES];
     [self.mNameLabel setHidden:YES];
     [self.imageWithText setHidden:YES];
     [self.mMessageStatusImageView setHidden:YES];
-<<<<<<< HEAD
     
-=======
 
     UITapGestureRecognizer *tapForOpenChat = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(processOpenChat)];
     tapForOpenChat.numberOfTapsRequired = 1;
     [self.mUserProfileImageView setUserInteractionEnabled:YES];
     [self.mUserProfileImageView addGestureRecognizer:tapForOpenChat];
 
->>>>>>> upstream/master
     if ([alMessage.type isEqualToString:@MT_INBOX_CONSTANT]) { //@"4" //Recieved Message
 
         [self.contentView bringSubviewToFront:self.mChannelMemberName];
@@ -444,13 +438,11 @@ UIViewController * modalCon;
     }
     else
     {
-<<<<<<< HEAD
         theUrl = [NSURL URLWithString:alMessage.fileMeta.thumbnailUrl];
     }
     
     [self.mImageView sd_setImageWithURL:theUrl];
     
-=======
         if(alMessage.fileMeta.thumbnailFilePath == nil){
             ALMessageClientService * messageClientService = [[ALMessageClientService alloc]init];
             [messageClientService downloadImageThumbnailUrl:alMessage withCompletion:^(NSString *fileURL, NSError *error) {
@@ -470,34 +462,26 @@ UIViewController * modalCon;
 
     }
 
->>>>>>> upstream/master
     return self;
 
 }
 
-<<<<<<< HEAD
-=======
 -(void) setInImageView:(NSURL*)url{
    [self.mImageView sd_setImageWithPreviousCachedImageWithURL:url placeholderImage:nil options:0 progress:nil completed:nil];
 }
->>>>>>> upstream/master
 
 #pragma mark - Menu option tap Method -
 
 -(void) proccessTapForMenu:(id)tap{
-<<<<<<< HEAD
     
 //    UIMenuItem * messageForward = [[UIMenuItem alloc] initWithTitle:NSLocalizedStringWithDefaultValue(@"forwardOptionTitle", [ALApplozicSettings getLocalizableName],[NSBundle mainBundle], @"Forward", @"") action:@selector(messageForward:)];
-=======
 
     [self processKeyBoardHideTap];
 
     UIMenuItem * messageForward = [[UIMenuItem alloc] initWithTitle:NSLocalizedStringWithDefaultValue(@"forwardOptionTitle", [ALApplozicSettings getLocalizableName],[NSBundle mainBundle], @"Forward", @"") action:@selector(messageForward:)];
->>>>>>> upstream/master
     UIMenuItem * messageReply = [[UIMenuItem alloc] initWithTitle:NSLocalizedStringWithDefaultValue(@"replyOptionTitle", [ALApplozicSettings getLocalizableName],[NSBundle mainBundle], @"Reply", @"") action:@selector(messageReply:)];
 
     if ([self.mMessage.type isEqualToString:@MT_INBOX_CONSTANT]){
-<<<<<<< HEAD
         
         [[UIMenuController sharedMenuController] setMenuItems: @[messageReply]];
         
@@ -507,7 +491,6 @@ UIViewController * modalCon;
 //        UIMenuItem * msgInfo = [[UIMenuItem alloc] initWithTitle:NSLocalizedStringWithDefaultValue(@"infoOptionTitle", [ALApplozicSettings getLocalizableName],[NSBundle mainBundle], @"Info", @"") action:@selector(msgInfo:)];
         
         [[UIMenuController sharedMenuController] setMenuItems: @[messageReply]];
-=======
 
         [[UIMenuController sharedMenuController] setMenuItems: @[messageForward,messageReply]];
 
@@ -517,7 +500,6 @@ UIViewController * modalCon;
         UIMenuItem * msgInfo = [[UIMenuItem alloc] initWithTitle:NSLocalizedStringWithDefaultValue(@"infoOptionTitle", [ALApplozicSettings getLocalizableName],[NSBundle mainBundle], @"Info", @"") action:@selector(msgInfo:)];
 
         [[UIMenuController sharedMenuController] setMenuItems: @[msgInfo,messageReply,messageForward]];
->>>>>>> upstream/master
     }
     [[UIMenuController sharedMenuController] update];
 
@@ -589,16 +571,13 @@ UIViewController * modalCon;
 
     [alShowImageViewController setImage:self.mImageView.image];
     [alShowImageViewController setAlMessage:self.mMessage];
-<<<<<<< HEAD
     
     //[self.delegate showFullScreen:alShowImageViewController];
     
     [self.delegate loadViewForMedia:alShowImageViewController];
-=======
 
     [self.delegate showFullScreen:alShowImageViewController];
 
->>>>>>> upstream/master
     return;
 }
 

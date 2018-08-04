@@ -146,13 +146,11 @@
     for (DB_CONTACT * userContact in result) {
         
         userContact.userId = contact.userId;
-<<<<<<< HEAD
         userContact.email = contact.email;
         userContact.fullName = contact.fullName;
         userContact.contactNumber = contact.contactNumber;
         userContact.contactImageUrl = contact.contactImageUrl;
         userContact.unreadCount = contact.unreadCount ? contact.unreadCount : [NSNumber numberWithInt:0];
-=======
         if(contact.email){
             userContact.email = contact.email;
         }
@@ -170,7 +168,6 @@
             userContact.unreadCount = contact.unreadCount;
         }
     
->>>>>>> upstream/master
         userContact.userStatus = contact.userStatus;
         userContact.connected = contact.connected;
         if(contact.displayName)

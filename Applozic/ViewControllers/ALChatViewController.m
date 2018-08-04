@@ -1810,15 +1810,12 @@
     if(self.conversationId && [ALApplozicSettings getContextualChatOption])
     {
         return self.getHeaderView.frame.size.height;
-<<<<<<< HEAD
     }
     else
     {
-=======
     }else if(alChannel.metadata !=nil && [alChannel isContextBasedChat]){
         return self.getContextBasedGroupView.frame.size.height;
     } else {
->>>>>>> upstream/master
         return 0;
     }
 }
@@ -1829,9 +1826,7 @@
 
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
-<<<<<<< HEAD
     return self.getHeaderView;
-=======
     ALChannelService * alChannelService = [ALChannelService new];
     ALChannel * alChannel = [alChannelService getChannelByKey:self.channelKey];
     if(alChannel.metadata!=nil && [alChannel isContextBasedChat]){
@@ -1875,7 +1870,6 @@
     [self setLabelViews:@[titleUILabel,priceUILabel] onView:view];
     
     return view;
->>>>>>> upstream/master
 }
 
 -(UIView *)getHeaderView
@@ -2780,16 +2774,13 @@
                 {
                     self.isUserBlocked = YES;
                     [self.label setHidden:self.isUserBlocked];
-<<<<<<< HEAD
                     [self.typingLabel setHidden:self.isUserBlocked];
                     NSString * alertText = [NSString stringWithFormat:[@"%@ " stringByAppendingString:NSLocalizedStringWithDefaultValue(@"blockedSuccessfullyText", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle], @"is blocked successfully", @"")], [self.alContact getDisplayName]];
-=======
                 
                     NSString *blockInfo = NSLocalizedStringWithDefaultValue(@"blockedSuccessfullyText", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle], @"%@ is blocked successfully", @"");
                     
                     NSString * alertText = [NSString stringWithFormat:blockInfo,[self.alContact getDisplayName]];
                     
->>>>>>> upstream/master
                     [ALUtilityClass showAlertMessage:alertText andTitle:NSLocalizedStringWithDefaultValue(@"userBlock", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle], @"USER BLOCK", @"")  ];
                 }
             }];

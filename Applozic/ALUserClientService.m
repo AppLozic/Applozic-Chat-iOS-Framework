@@ -314,7 +314,6 @@
     @try
     {
         
-<<<<<<< HEAD
         NSLog(@"SEVER_RESPONSE_FOR_ONLINE_CONTACT_LIMIT_JSON : %@", (NSString *)theJson);
         NSArray * jsonArray = [NSArray arrayWithArray:(NSArray *)theJson];
         if(jsonArray.count)
@@ -322,24 +321,20 @@
             NSMutableArray * ALLUserDetailArray = [NSMutableArray new];
             NSDictionary * JSONDictionary = (NSDictionary *)theJson;
             for (NSDictionary * theDictionary in JSONDictionary)
-=======
         NSString * theUrlString = [NSString stringWithFormat:@"%@/rest/ws/user/detail",KBASE_URL];
         NSMutableURLRequest * theRequest = [ALRequestHandler createGETRequestWithUrlString:theUrlString paramString:paramString];
         
         [ALResponseHandler processRequest:theRequest andTag:@"USERS_DETAILS_FOR_ONLINE_CONTACT_LIMIT" WithCompletionHandler:^(id theJson, NSError *theError) {
             
             if (theError)
->>>>>>> upstream/master
             {
                 completionMark(nil, theError);
                 NSLog(@"ERROR_IN_USERS_DETAILS_FOR_ONLINE_CONTACT_LIMIT : %@", theError);
                 return;
             }
-<<<<<<< HEAD
             completionMark(ALLUserDetailArray, theError);
         }
     }];
-=======
             
             NSLog(@"SERVER_RESPONSE_FOR_ONLINE_CONTACT_LIMIT_JSON : %@", (NSString *)theJson);
             NSArray * jsonArray = [NSArray arrayWithArray:(NSArray *)theJson];
@@ -366,7 +361,6 @@
 
     }
     
->>>>>>> upstream/master
 }
 
 //========================================================================================================================

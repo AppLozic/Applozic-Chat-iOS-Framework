@@ -155,7 +155,6 @@
     return NO;
 }
 
-<<<<<<< HEAD
 =======
 -(BOOL)isPartOfCategory:(NSString*)category{
     
@@ -173,5 +172,4 @@
     return NO;
 }
 
->>>>>>> upstream/master
 @end
