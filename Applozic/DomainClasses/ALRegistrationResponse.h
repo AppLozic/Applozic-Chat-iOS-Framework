@@ -27,7 +27,6 @@
 @property  NSMutableDictionary * metadata;
 @property NSString *roleName;
 @property short roleType;
-@property NSString * userEncryptionKey;
 
 -(BOOL)isRegisteredSuccessfully;
 

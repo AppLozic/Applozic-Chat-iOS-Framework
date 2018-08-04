@@ -102,7 +102,7 @@ static NSMutableDictionary *clientIds;
 - (void)deleteAllFlowsForClientId:(NSString *)clientId {
     @synchronized(clientIds) {
         
-        ALDDLogInfo(@"[MQTTInMemoryPersistence] deleteAllFlowsForClientId %@", clientId);
+        DDLogInfo(@"[MQTTInMemoryPersistence] deleteAllFlowsForClientId %@", clientId);
         [clientIds removeObjectForKey:clientId];
     }
 }

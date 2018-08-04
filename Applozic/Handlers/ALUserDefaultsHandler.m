@@ -436,10 +436,6 @@
 
 +(NSString *)getFILEURL
 {
-    if([ALApplozicSettings isS3StorageServiceEnabled]){
-        return [self getBASEURL];
-    }
-    
     NSString * kFileUrl = [[NSUserDefaults standardUserDefaults] valueForKey:APPLOZIC_FILE_URL];
     return (kFileUrl && ![kFileUrl isEqualToString:@""]) ? kFileUrl : @"https://applozic.appspot.com";
 }
@@ -712,27 +708,6 @@
     short roleType = [[NSUserDefaults standardUserDefaults] integerForKey:AL_USER_ROLE_TYPE];
     return roleType ? roleType : 3;
     
-}
-
-+(void)setPushNotificationFormat:(short)format{
-    [[NSUserDefaults standardUserDefaults] setInteger:format forKey:AL_USER_PUSH_NOTIFICATION_FORMATE];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-}
-
-+(short)getPushNotificationFormat{
-    short pushNotificationFormat = [[NSUserDefaults standardUserDefaults] integerForKey:AL_USER_PUSH_NOTIFICATION_FORMATE];
-    return pushNotificationFormat ? pushNotificationFormat : 0;
-}
-
-+(void)setUserEncryption:(NSString*)encryptionKey{
-    
-    [[NSUserDefaults standardUserDefaults] setValue:encryptionKey forKey:USER_MQTT_ENCRYPTION_KEY];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-}
-
-+(NSString*)getUserEncryptionKey{
-    
-    return [[NSUserDefaults standardUserDefaults] valueForKey:USER_MQTT_ENCRYPTION_KEY];
 }
 
 

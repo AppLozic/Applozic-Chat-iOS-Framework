@@ -44,6 +44,7 @@
     [user setDeviceApnsType:!isDevelopmentBuild()];
     [user setEnableEncryption:[ALUserDefaultsHandler getEnableEncryption]];
     [user setRoleName:[ALApplozicSettings getUserRoleName]];
+    
     if([ALUserDefaultsHandler getAppModuleName] != NULL)
     {
         [user setAppModuleName:[ALUserDefaultsHandler getAppModuleName]];
@@ -58,10 +59,9 @@
     NSError * error;
     NSData * postdata = [NSJSONSerialization dataWithJSONObject:user.dictionary options:0 error:&error];
     NSString *theParamString = [[NSString alloc] initWithData:postdata encoding:NSUTF8StringEncoding];
-
-    NSString *logParamText = [self getUserParamTextForLogging:user];
-    NSLog(@"PARAM_STRING USER_REGISTRATION :: %@",logParamText);
-
+    
+    NSLog(@"PARAM_STRING USER_REGISTRATION :: %@",theParamString);
+    
     NSMutableURLRequest * theRequest = [ALRequestHandler createPOSTRequestWithUrlString:theUrlString paramString:theParamString];
     
     [ALResponseHandler processRequest:theRequest andTag:@"CREATE ACCOUNT" WithCompletionHandler:^(id theJson, NSError *theError) {
@@ -89,13 +89,7 @@
             [ALUserDefaultsHandler setDeviceKeyString:response.deviceKey];
             [ALUserDefaultsHandler setUserKeyString:response.userKey];
             [ALUserDefaultsHandler setUserPricingPackage:response.pricingPackage];
-            [ALUserDefaultsHandler setLastSyncTime:[NSNumber numberWithDouble:[response.currentTimeStamp doubleValue]]];
-            [ALUserDefaultsHandler setLastSyncChannelTime:(NSNumber *)response.currentTimeStamp];
             
-            if(user.pushNotificationFormat){
-                [ALUserDefaultsHandler setPushNotificationFormat:user.pushNotificationFormat];
-            }
-        
             if(response.roleType){
                 [ALUserDefaultsHandler setUserRoleType:response.roleType];
             }
@@ -108,11 +102,6 @@
             {
                 [ALUserDefaultsHandler setProfileImageLinkFromServer:response.imageLink];
             }
-            if(response.userEncryptionKey)
-            {
-                [ALUserDefaultsHandler setUserEncryption:response.userEncryptionKey];
-            }
-            
             if(response.statusMessage)
             {
                 [ALUserDefaultsHandler setLoggedInUserStatus:response.statusMessage];
@@ -154,6 +143,8 @@
         
         completion(response,nil);
         
+        [ALUserDefaultsHandler setLastSyncTime:[NSNumber numberWithDouble:[response.currentTimeStamp doubleValue]]];
+        [ALUserDefaultsHandler setLastSyncChannelTime:(NSNumber *)response.currentTimeStamp];
         [self connect];
         ALMessageDBService * dbService = [[ALMessageDBService alloc] init];
         if(dbService.isMessageTableEmpty)
@@ -211,7 +202,7 @@
     if([ALUserDefaultsHandler getAppModuleName] != NULL){
         [user setAppModuleName:[ALUserDefaultsHandler getAppModuleName]];
     }
-    [user setPushNotificationFormat:[ALUserDefaultsHandler getPushNotificationFormat]];
+    
     if([ALUserDefaultsHandler getNotificationSoundFileName] != nil){
         [user setNotificationSoundFileName:[ALUserDefaultsHandler getNotificationSoundFileName]];
     }
@@ -338,16 +329,6 @@
         }
         NSLog(@"RESPONSE_SYNC_ACCOUNT_STATUS :: %@",(NSString *)theJson);
     }];
-}
-
--(NSString *)getUserParamTextForLogging:(ALUser *)user
-{
-    NSString *passwordText = user.password ? @"***":@"";
-    [user setPassword: passwordText];
-    NSError * error;
-    NSData * userData = [NSJSONSerialization dataWithJSONObject:user.dictionary options:0 error:&error];
-    NSString *logParamString = [[NSString alloc] initWithData:userData encoding:NSUTF8StringEncoding];
-    return logParamString;
 }
 
 static BOOL isDevelopmentBuild(void) {

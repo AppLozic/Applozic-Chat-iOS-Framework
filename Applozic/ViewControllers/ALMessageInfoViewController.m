@@ -12,7 +12,6 @@
 #import "ALDataNetworkConnection.h"
 #import "ALNotificationView.h"
 #import "TSMessageView.h"
-#import "ALMessageClientService.h"
 
 @interface ALMessageInfoViewController ()
 {
@@ -252,8 +251,9 @@
 {
     ALContactDBService * alContactDBService = [ALContactDBService new];
     ALContact *alContact = [alContactDBService loadContactByKey:@"userId" value:msgInfo.userId];
-    ALMessageClientService * messageClientService = [[ALMessageClientService alloc]init];
-    [messageClientService downloadImageUrlAndSet:alContact.contactImageUrl imageView:self.userImage defaultImage:nil];
+    
+    NSURL * theUrl = [NSURL URLWithString:alContact.contactImageUrl];
+    [self.userImage sd_setImageWithURL:theUrl];
     [self.firstAlphabet setHidden:YES];
     [self.userName setText:[alContact getDisplayName]];
     

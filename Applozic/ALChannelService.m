@@ -666,28 +666,6 @@
     }
 }
 
--(void)updateChannelMetaData:(NSNumber *)channelKey
-          orClientChannelKey:(NSString *)clientChannelKey
-                    metadata:(NSMutableDictionary *)metaData
-              withCompletion:(void(^)(NSError *error))completion{
-    
-    if(channelKey != nil || clientChannelKey != nil){
-        [ALChannelClientService updateChannelMetaData:channelKey orClientChannelKey:clientChannelKey metadata:metaData andCompletion:^(NSError *error, ALAPIResponse *response){
-            if([response.status isEqualToString:@"success"]){
-                ALChannelDBService *channelDBService = [[ALChannelDBService alloc] init];
-                if(clientChannelKey != nil){
-                    ALChannel *alChannel = [channelDBService loadChannelByClientChannelKey:clientChannelKey];
-                    [channelDBService updateChannelMetaData:alChannel.key metaData:metaData];
-                }
-                else if(channelKey !=nil){
-                    [channelDBService updateChannelMetaData:channelKey metaData:metaData];
-                }
-            }
-            completion(error);
-        }];
-    }
-}
-
 //===========================================================================================================================
 #pragma mark CHANNEL SYNCHRONIZATION
 //===========================================================================================================================
@@ -704,9 +682,6 @@
             [channelDBService processArrayAfterSyncCall:response.alChannelArray];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"GroupDetailTableReload" object:nil];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"UPDATE_CHANNEL_NAME" object:nil];
-        }
-        if(!error){
-            [ALUserDefaultsHandler setLastSyncChannelTime:response.generatedAt];
         }
     }];
 }
@@ -962,32 +937,6 @@
     }
 }
 
-- (NSDictionary *)metadataToTurnOffActionMessagesNotifications {
-    return [self metadataToTurnOffActionMessagesNotificationsAndhideMessages:NO];
-}
 
-- (NSDictionary *)metadataToHideActionMessagesAndTurnOffNotifications {
-    return [self metadataToTurnOffActionMessagesNotificationsAndhideMessages:YES];
-}
-
--(NSDictionary *)metadataToTurnOffActionMessagesNotificationsAndhideMessages:(BOOL)hideMessages {
-
-    // In case of just turning off the notifications, only 'Alert' key needs to be false.
-    if(!hideMessages) {
-        return @{@"Alert":@"false"};
-    }
-    NSDictionary *basicMetadata = @{@"CREATE_GROUP_MESSAGE":@"",
-                               @"REMOVE_MEMBER_MESSAGE":@"",
-                               @"ADD_MEMBER_MESSAGE":@"",
-                               @"JOIN_MEMBER_MESSAGE":@"",
-                               @"GROUP_NAME_CHANGE_MESSAGE":@"",
-                               @"GROUP_ICON_CHANGE_MESSAGE":@"",
-                               @"GROUP_LEFT_MESSAGE":@"",
-                               @"DELETED_GROUP_MESSAGE":@"",
-                               };
-    NSMutableDictionary *metadata = [[NSMutableDictionary alloc] initWithDictionary:basicMetadata];
-    metadata[@"hide"] = @"true";
-    metadata[@"Alert"] = @"false";
-    return metadata;
-}
 @end
+

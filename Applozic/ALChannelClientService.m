@@ -396,51 +396,6 @@
     }];
 }
 
-+(void)updateChannelMetaData:(NSNumber *)channelKey orClientChannelKey:(NSString *)clientChannelKey
-        metadata:(NSMutableDictionary *)metaData
-        andCompletion:(void(^)(NSError *error, ALAPIResponse *response))completion {
-    
-    NSString * theUrlString = [NSString stringWithFormat:@"%@%@", KBASE_URL, UPDATE_CHANNEL_URL];
-    
-    NSMutableDictionary *dictionary = [NSMutableDictionary new];
-    
-    if(clientChannelKey.length)
-    {
-        [dictionary setObject:clientChannelKey forKey:@"clientGroupId"];
-    }
-    else
-    {
-        [dictionary setObject:channelKey forKey:@"groupId"];
-    }
-    if (metaData)
-    {
-        [dictionary setObject:metaData forKey:@"metadata"];
-    }
-    
-    NSError *error;
-    NSData *postdata = [NSJSONSerialization dataWithJSONObject:dictionary options:0 error:&error];
-    NSString * theParamString = [[NSString alloc] initWithData:postdata encoding: NSUTF8StringEncoding];
-    
-    NSLog(@"PARAM_STRING_CHANNEL_UPDATE :: %@", theParamString);
-    
-    NSMutableURLRequest * theRequest = [ALRequestHandler createPOSTRequestWithUrlString:theUrlString paramString:theParamString];
-    
-    [ALResponseHandler processRequest:theRequest andTag:@"UPDATE_CHANNEL" WithCompletionHandler:^(id theJson, NSError *error) {
-        
-        ALAPIResponse *response = nil;
-        if(error)
-        {
-            NSLog(@"ERROR IN UPDATE_CHANNEL :: %@", error);
-        }
-        else
-        {
-            response = [[ALAPIResponse alloc] initWithJSONString:theJson];
-        }
-        NSLog(@"RESPONSE_UPDATE_CHANNEL :: %@", (NSString *)theJson);
-        completion(error, response);
-    }];
-}
-
 +(void)syncCallForChannel:(NSNumber *)updatedAt andCompletion:(void(^)(NSError *error, ALChannelSyncResponse *response))completion
 {
     NSString * theUrlString = [NSString stringWithFormat:@"%@%@", KBASE_URL, CHANNEL_SYNC_URL];

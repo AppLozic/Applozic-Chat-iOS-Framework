@@ -111,7 +111,7 @@
                           forMode:(NSString *)runLoopMode
                    securityPolicy:(MQTTSSLSecurityPolicy *) securityPolicy
                      certificates:(NSArray *)certificates {
-    ALDDLogVerbose(@"[MQTTSessionLegacy] initWithClientId:%@ ", clientId);
+    DDLogVerbose(@"[MQTTSessionLegacy] initWithClientId:%@ ", clientId);
 
     self = [self init];
     self.clientId = clientId;
@@ -335,7 +335,7 @@
                  port:(UInt32)port
              usingSSL:(BOOL)usingSSL
        connectHandler:(MQTTConnectHandler)connectHandler {
-    ALDDLogVerbose(@"MQTTSessionLegacy connectToHost:%@ port:%d usingSSL:%d connectHandler:%p",
+    DDLogVerbose(@"MQTTSessionLegacy connectToHost:%@ port:%d usingSSL:%d connectHandler:%p",
                  host, (unsigned int)port, usingSSL, connectHandler);
     
     if (self.securityPolicy) {

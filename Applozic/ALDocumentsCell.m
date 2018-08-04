@@ -21,7 +21,7 @@
 #import "ALMessageService.h"
 #import "ALMessageInfoViewController.h"
 #import "ALChatViewController.h"
-#import "ALMessageClientService.h"
+
 
 #define BUBBLE_PADDING_X 13
 #define BUBBLE_PADDING_X_OUTBOX 60
@@ -144,11 +144,6 @@
     
     [self.replyUIView removeFromSuperview];
     
-    UITapGestureRecognizer *tapForOpenChat = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(processOpenChat)];
-    tapForOpenChat.numberOfTapsRequired = 1;
-    [self.mUserProfileImageView setUserInteractionEnabled:YES];
-    [self.mUserProfileImageView addGestureRecognizer:tapForOpenChat];
-    
     if([alMessage.type isEqualToString:@MT_INBOX_CONSTANT])
     {
         [self.mUserProfileImageView setFrame:CGRectMake(USER_PROFILE_PADDING_X, 0, USER_PROFILE_WIDTH, USER_PROFILE_HEIGHT)];
@@ -237,8 +232,9 @@
         
         if(alContact.contactImageUrl)
         {
-            ALMessageClientService * messageClientService = [[ALMessageClientService alloc]init];
-            [messageClientService downloadImageUrlAndSet:alContact.contactImageUrl imageView:self.mUserProfileImageView defaultImage:@"ic_contact_picture_holo_light.png"];
+            NSURL * theUrl1 = [NSURL URLWithString:alContact.contactImageUrl];
+        
+            [self.mUserProfileImageView sd_setImageWithURL:theUrl1 placeholderImage:[ALUtilityClass getImageFromFramworkBundle:@"ic_contact_picture_holo_light.png"]  options:SDWebImageRefreshCached];
         }
         else
         {
@@ -426,25 +422,26 @@
 
 -(void) proccessTapForMenu:(id)tap{
     
-    [self processKeyBoardHideTap];
-
-    UIMenuItem * messageForward = [[UIMenuItem alloc] initWithTitle:NSLocalizedStringWithDefaultValue(@"forwardOptionTitle", [ALApplozicSettings getLocalizableName],[NSBundle mainBundle], @"Forward", @"") action:@selector(messageForward:)];
+//    UIMenuItem * messageForward = [[UIMenuItem alloc] initWithTitle:NSLocalizedStringWithDefaultValue(@"forwardOptionTitle", [ALApplozicSettings getLocalizableName],[NSBundle mainBundle], @"Forward", @"") action:@selector(messageForward:)];
     UIMenuItem * messageReply = [[UIMenuItem alloc] initWithTitle:NSLocalizedStringWithDefaultValue(@"replyOptionTitle", [ALApplozicSettings getLocalizableName],[NSBundle mainBundle], @"Reply", @"") action:@selector(messageReply:)];
     
     if ([self.mMessage.type isEqualToString:@MT_INBOX_CONSTANT]){
         
-        [[UIMenuController sharedMenuController] setMenuItems: @[messageForward,messageReply]];
+        [[UIMenuController sharedMenuController] setMenuItems: @[messageReply]];
         
     }else if ([self.mMessage.type isEqualToString:@MT_OUTBOX_CONSTANT]){
 
         
-        UIMenuItem * msgInfo = [[UIMenuItem alloc] initWithTitle:NSLocalizedStringWithDefaultValue(@"infoOptionTitle", [ALApplozicSettings getLocalizableName],[NSBundle mainBundle], @"Info", @"") action:@selector(msgInfo:)];
+//        UIMenuItem * msgInfo = [[UIMenuItem alloc] initWithTitle:NSLocalizedStringWithDefaultValue(@"infoOptionTitle", [ALApplozicSettings getLocalizableName],[NSBundle mainBundle], @"Info", @"") action:@selector(msgInfo:)];
         
-        [[UIMenuController sharedMenuController] setMenuItems: @[msgInfo,messageReply,messageForward]];
+        [[UIMenuController sharedMenuController] setMenuItems: @[messageReply]];
     }
     [[UIMenuController sharedMenuController] update];
     
 }
+
+
+
 
 -(void) addShadowEffects
 {
@@ -565,6 +562,9 @@
                                                                               || [self isMessageReplyMenuEnabled:action]));
 }
 
+
+
+
 -(void) delete:(id)sender
 {
     //UI
@@ -576,15 +576,15 @@
         NSLog(@"DELETE MESSAGE ERROR :: %@", error.description);
     }];
 }
+            
+            
 
 -(void) messageReply:(id)sender
 {
     NSLog(@"Message forward option is pressed");
     [self.delegate processMessageReply:self.mMessage];
     
-}
-
--(void)openUserChatVC
+}-(void)openUserChatVC
 {
     [self.delegate processUserChatView:self.mMessage];
 }
@@ -609,7 +609,8 @@
         }
     }];
 }
-
+            
+            
 -(void) messageForward:(id)sender
 {
     NSLog(@"Message forward option is pressed");
@@ -617,25 +618,18 @@
         
 }
 
--(void) processKeyBoardHideTap
-{
-    [self.delegate handleTapGestureForKeyBoard];
-}
 
 -(BOOL)isForwardMenuEnabled:(SEL) action;
 {
     return ([ALApplozicSettings isForwardOptionEnabled] && action == @selector(messageForward:));
 }
-
 -(BOOL)isMessageReplyMenuEnabled:(SEL) action
 {
+    
+    
     return ([ALApplozicSettings isReplyOptionEnabled] && action == @selector(messageReply:));
 }
 
--(void)processOpenChat
-{
-    [self processKeyBoardHideTap];
-    [self.delegate openUserChat:self.mMessage];
-}
+
 
 @end

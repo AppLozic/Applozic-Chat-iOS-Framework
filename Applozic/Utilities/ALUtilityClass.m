@@ -26,8 +26,8 @@
 {
     
     NSDateFormatter * formatter =  [[NSDateFormatter alloc] init];
-    [formatter setAMSymbol:@"am"];
-    [formatter setPMSymbol:@"pm"];
+    [formatter setAMSymbol:@"ص"];
+    [formatter setPMSymbol:@"م"];
     [formatter setDateFormat:forMatStr];
     formatter.timeZone = [NSTimeZone localTimeZone];
     
@@ -380,8 +380,8 @@
     }
     
     [format setDateFormat:@"hh:mm a"];
-    [format setAMSymbol:@"am"];
-    [format setPMSymbol:@"pm"];
+    [format setAMSymbol:@"ص"];
+    [format setPMSymbol:@"م"];
     
     self.msgtime = [format stringFromDate:date];
     
@@ -567,15 +567,15 @@
     
     if (hours)
     {
-        text = [NSString stringWithFormat:@"%ld Hr %02ld Min %02ld Sec", (long)hours, (long)minutes, (long)seconds];
+        text = [NSString stringWithFormat:@"%ld ساعة %02ld دقيقة %02ld ثواني", (long)hours, (long)minutes, (long)seconds];
     }
     else if (minutes)
     {
-        text = [NSString stringWithFormat:@"%ld Min %ld Sec", (long)minutes, (long)seconds];
+        text = [NSString stringWithFormat:@"%ld دقيقة %ld ثواني", (long)minutes, (long)seconds];
     }
     else
     {
-        text = [NSString stringWithFormat:@"%ld Sec", (long)seconds];
+        text = [NSString stringWithFormat:@"%ld ثواني", (long)seconds];
     }
     
     return text;

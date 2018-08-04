@@ -62,7 +62,7 @@ NSString * const MQTTSessionErrorDomain = @"MQTT";
 }
 
 - (instancetype)init {
-    ALDDLogVerbose(@"[MQTTSession] init");
+    DDLogVerbose(@"[MQTTSession] init");
     self = [super init];
     self.txMsgId = 1;
     self.persistence = [[MQTTCoreDataPersistence alloc] init];
@@ -161,7 +161,7 @@ NSString * const MQTTSessionErrorDomain = @"MQTT";
 }
 
 - (UInt16)subscribeToTopics:(NSDictionary<NSString *, NSNumber *> *)topics subscribeHandler:(MQTTSubscribeHandler)subscribeHandler {
-    ALDDLogVerbose(@"[MQTTSession] subscribeToTopics:%@]", topics);
+    DDLogVerbose(@"[MQTTSession] subscribeToTopics:%@]", topics);
     
     //for (NSNumber *qos in [topics allValues]) {
     //NSAssert([qos intValue] >= 0 && [qos intValue] <= 2, @"qosLevel must be 0, 1, or 2");
@@ -192,7 +192,7 @@ NSString * const MQTTSessionErrorDomain = @"MQTT";
 }
 
 - (UInt16)unsubscribeTopics:(NSArray<NSString *> *)topics unsubscribeHandler:(MQTTUnsubscribeHandler)unsubscribeHandler {
-    ALDDLogVerbose(@"[MQTTSession] unsubscribeTopics:%@", topics);
+    DDLogVerbose(@"[MQTTSession] unsubscribeTopics:%@", topics);
     UInt16 mid = [self nextMsgId];
     if (unsubscribeHandler) {
         [self.unsubscribeHandlers setObject:[unsubscribeHandler copy] forKey:@(mid)];
@@ -217,7 +217,7 @@ NSString * const MQTTSessionErrorDomain = @"MQTT";
                   qos:(MQTTQosLevel)qos
        publishHandler:(MQTTPublishHandler)publishHandler
 {
-    ALDDLogVerbose(@"[MQTTSession] publishData:%@... onTopic:%@ retain:%d qos:%ld publishHandler:%p",
+    DDLogVerbose(@"[MQTTSession] publishData:%@... onTopic:%@ retain:%d qos:%ld publishHandler:%p",
                  [data subdataWithRange:NSMakeRange(0, MIN(256, data.length))],
                  [topic substringWithRange:NSMakeRange(0, MIN(256, topic.length))],
                  retainFlag,
@@ -261,7 +261,7 @@ NSString * const MQTTSessionErrorDomain = @"MQTT";
                                                     deadline:[NSDate date]];
         }
         if (!flow) {
-            ALDDLogWarn(@"[MQTTSession] dropping outgoing message %d", msgId);
+            DDLogWarn(@"[MQTTSession] dropping outgoing message %d", msgId);
             NSError *error = [NSError errorWithDomain:MQTTSessionErrorDomain
                                                  code:MQTTSessionErrorDroppingOutgoingMessage
                                              userInfo:@{NSLocalizedDescriptionKey : @"Dropping outgoing Message"}];
@@ -278,15 +278,15 @@ NSString * const MQTTSessionErrorDomain = @"MQTT";
             }
             
             if ([flow.commandType intValue] == MQTTPublish) {
-                ALDDLogVerbose(@"[MQTTSession] PUBLISH %d", msgId);
+                DDLogVerbose(@"[MQTTSession] PUBLISH %d", msgId);
                 if (![self encode:msg]) {
-                    ALDDLogInfo(@"[MQTTSession] queueing message %d after unsuccessfull attempt", msgId);
+                    DDLogInfo(@"[MQTTSession] queueing message %d after unsuccessfull attempt", msgId);
                     flow.commandType = [NSNumber numberWithUnsignedInt:MQTT_None];
                     flow.deadline = [NSDate date];
                     [self.persistence sync];
                 }
             } else {
-                ALDDLogVerbose(@"[MQTTSession] queueing message %d", msgId);
+                DDLogVerbose(@"[MQTTSession] queueing message %d", msgId);
             }
         }
     } else {
@@ -310,11 +310,11 @@ NSString * const MQTTSessionErrorDomain = @"MQTT";
 }
 
 - (void)closeWithDisconnectHandler:(MQTTDisconnectHandler)disconnectHandler {
-    ALDDLogVerbose(@"[MQTTSession] closeWithDisconnectHandler:%p ", disconnectHandler);
+    DDLogVerbose(@"[MQTTSession] closeWithDisconnectHandler:%p ", disconnectHandler);
     self.disconnectHandler = disconnectHandler;
     
     if (self.status == MQTTSessionStatusConnected) {
-        ALDDLogVerbose(@"[MQTTSession] disconnecting");
+        DDLogVerbose(@"[MQTTSession] disconnecting");
         self.status = MQTTSessionStatusDisconnecting;
         (void)[self encode:[MQTTMessage disconnectMessage]];
     } else {
@@ -324,7 +324,7 @@ NSString * const MQTTSessionErrorDomain = @"MQTT";
 
 - (void)closeInternal
 {
-    ALDDLogVerbose(@"[MQTTSession] closeInternal");
+    DDLogVerbose(@"[MQTTSession] closeInternal");
     
     if (self.checkDupTimer) {
         [self.checkDupTimer invalidate];
@@ -389,13 +389,13 @@ NSString * const MQTTSessionErrorDomain = @"MQTT";
 
 - (void)keepAlive:(NSTimer *)timer
 {
-    ALDDLogVerbose(@"[MQTTSession] keepAlive %@ @%.0f", self.clientId, [[NSDate date] timeIntervalSince1970]);
+    DDLogVerbose(@"[MQTTSession] keepAlive %@ @%.0f", self.clientId, [[NSDate date] timeIntervalSince1970]);
     (void)[self encode:[MQTTMessage pingreqMessage]];
 }
 
 - (void)checkDup:(NSTimer *)timer
 {
-    ///ALDDLogVerbose(@"[MQTTSession] checkDup %@ @%.0f", self.clientId, [[NSDate date] timeIntervalSince1970]);
+    ///DDLogVerbose(@"[MQTTSession] checkDup %@ @%.0f", self.clientId, [[NSDate date] timeIntervalSince1970]);
     [self checkTxFlows];
 }
 
@@ -417,12 +417,12 @@ NSString * const MQTTSessionErrorDomain = @"MQTT";
         }
     }
     for (id<MQTTFlow> flow in flows) {
-        ALDDLogVerbose(@"[MQTTSession] %@ flow %@ %@ %@", self.clientId, flow.deadline, flow.commandType, flow.messageId);
+        DDLogVerbose(@"[MQTTSession] %@ flow %@ %@ %@", self.clientId, flow.deadline, flow.commandType, flow.messageId);
         if ([flow.deadline compare:[NSDate date]] == NSOrderedAscending) {
             switch ([flow.commandType intValue]) {
                 case 0:
                     if (windowSize <= self.persistence.maxWindowSize) {
-                        ALDDLogVerbose(@"[MQTTSession] PUBLISH queued message %@", flow.messageId);
+                        DDLogVerbose(@"[MQTTSession] PUBLISH queued message %@", flow.messageId);
                         message = [MQTTMessage publishMessageWithData:flow.data
                                                               onTopic:flow.topic
                                                                   qos:[flow.qosLevel intValue]
@@ -438,7 +438,7 @@ NSString * const MQTTSessionErrorDomain = @"MQTT";
                     }
                     break;
                 case MQTTPublish:
-                    ALDDLogInfo(@"[MQTTSession] resend PUBLISH %@", flow.messageId);
+                    DDLogInfo(@"[MQTTSession] resend PUBLISH %@", flow.messageId);
                     message = [MQTTMessage publishMessageWithData:flow.data
                                                           onTopic:flow.topic
                                                               qos:[flow.qosLevel intValue]
@@ -451,7 +451,7 @@ NSString * const MQTTSessionErrorDomain = @"MQTT";
                     }
                     break;
                 case MQTTPubrel:
-                    ALDDLogInfo(@"[MQTTSession] resend PUBREL %@", flow.messageId);
+                    DDLogInfo(@"[MQTTSession] resend PUBREL %@", flow.messageId);
                     message = [MQTTMessage pubrelMessageWithMessageId:[flow.messageId intValue]];
                     if ([self encode:message]) {
                         flow.deadline = [NSDate dateWithTimeIntervalSinceNow:DUPTIMEOUT];
@@ -471,7 +471,7 @@ NSString * const MQTTSessionErrorDomain = @"MQTT";
                         @"MQTTDecoderEventConnectionClosed",
                         @"MQTTDecoderEventConnectionError"
                         ];
-    ALDDLogVerbose(@"[MQTTSession] decoder handleEvent: %@ (%d) %@",
+    DDLogVerbose(@"[MQTTSession] decoder handleEvent: %@ (%d) %@",
                  events[eventCode % [events count]],
                  eventCode,
                  [error description]);
@@ -497,7 +497,7 @@ NSString * const MQTTSessionErrorDomain = @"MQTT";
 - (void)decoder:(MQTTDecoder*)sender didReceiveMessage:(NSData *)data {
     MQTTMessage *message = [MQTTMessage messageFromData:data];
     if (!message) {
-        ALDDLogError(@"[MQTTSession] MQTT illegal message received");
+        DDLogError(@"[MQTTSession] MQTT illegal message received");
         NSError * error = [NSError errorWithDomain:MQTTSessionErrorDomain
                                               code:MQTTSessionErrorIllegalMessageReceived
                                           userInfo:@{NSLocalizedDescriptionKey : @"MQTT illegal message received"}];
@@ -671,7 +671,7 @@ NSString * const MQTTSessionErrorDomain = @"MQTT";
                 }
                 break;
             default:
-                ALDDLogError(@"[MQTTSession] other state");
+                DDLogError(@"[MQTTSession] other state");
                 break;
         }
     }
@@ -693,7 +693,7 @@ NSString * const MQTTSessionErrorDomain = @"MQTT";
     if (!topic) {
         topic = [[NSString alloc] initWithData:topicData
                                       encoding:NSISOLatin1StringEncoding];
-        ALDDLogError(@"non UTF8 topic %@", topic);
+        DDLogError(@"non UTF8 topic %@", topic);
     }
     NSRange range = NSMakeRange(2 + topicLength, [data length] - topicLength - 2);
     data = [data subdataWithRange:range];
@@ -758,7 +758,7 @@ NSString * const MQTTSessionErrorDomain = @"MQTT";
                                                   incomingFlag:YES
                                                    commandType:MQTTPubrec
                                                       deadline:[NSDate dateWithTimeIntervalSinceNow:DUPTIMEOUT]]) {
-                    ALDDLogWarn(@"[MQTTSession] dropping incoming messages");
+                    DDLogWarn(@"[MQTTSession] dropping incoming messages");
                 } else {
                     [self.persistence sync];
                     [self tell];
@@ -964,16 +964,16 @@ NSString * const MQTTSessionErrorDomain = @"MQTT";
 }
 
 - (UInt16)nextMsgId {
-    ALDDLogVerbose(@"nextMsgId synchronizing");
+    DDLogVerbose(@"nextMsgId synchronizing");
     @synchronized(self) {
-        ALDDLogVerbose(@"nextMsgId synchronized");
+        DDLogVerbose(@"nextMsgId synchronized");
         self.txMsgId++;
         while (self.txMsgId == 0 || [self.persistence flowforClientId:self.clientId
                                                          incomingFlag:NO
                                                             messageId:self.txMsgId] != nil) {
             self.txMsgId++;
         }
-        ALDDLogVerbose(@"nextMsgId synchronized done");
+        DDLogVerbose(@"nextMsgId synchronized done");
         return self.txMsgId;
     }
 }
@@ -1128,7 +1128,7 @@ NSString * const MQTTSessionErrorDomain = @"MQTT";
 #pragma mark - MQTTTransport interface
 
 - (void)connect {
-    ALDDLogVerbose(@"[MQTTSession] connecting");
+    DDLogVerbose(@"[MQTTSession] connecting");
     if (self.cleanSessionFlag) {
         [self.persistence deleteAllFlowsForClientId:self.clientId];
         [self.subscribeHandlers removeAllObjects];
@@ -1150,13 +1150,13 @@ NSString * const MQTTSessionErrorDomain = @"MQTT";
 }
 
 - (void)connectWithConnectHandler:(MQTTConnectHandler)connectHandler {
-    ALDDLogVerbose(@"[MQTTSession] connectWithConnectHandler:%p", connectHandler);
+    DDLogVerbose(@"[MQTTSession] connectWithConnectHandler:%p", connectHandler);
     self.connectHandler = connectHandler;
     [self connect];
 }
 
 - (void)disconnect {
-    ALDDLogVerbose(@"[MQTTSession] sending DISCONNECT");
+    DDLogVerbose(@"[MQTTSession] sending DISCONNECT");
     self.status = MQTTSessionStatusDisconnecting;
     
     (void)[self encode:[MQTTMessage disconnectMessage]];
@@ -1177,37 +1177,37 @@ NSString * const MQTTSessionErrorDomain = @"MQTT";
                                       data:message.data];
                 }
             }
-            ALDDLogVerbose(@"[MQTTSession] mqttTransport send");
+            DDLogVerbose(@"[MQTTSession] mqttTransport send");
             return [self.transport send:wireFormat];
         } else {
-            ALDDLogError(@"[MQTTSession] trying to send message without wire format");
+            DDLogError(@"[MQTTSession] trying to send message without wire format");
             return false;
         }
     } else {
-        ALDDLogError(@"[MQTTSession] trying to send nil message");
+        DDLogError(@"[MQTTSession] trying to send nil message");
         return false;
     }
 }
 
 #pragma mark - MQTTTransport delegate
 - (void)mqttTransport:(id<MQTTTransport>)mqttTransport didReceiveMessage:(NSData *)message {
-    ALDDLogVerbose(@"[MQTTSession] mqttTransport didReceiveMessage");
+    DDLogVerbose(@"[MQTTSession] mqttTransport didReceiveMessage");
     
     [self.decoder decodeMessage:message];
     
 }
 
 - (void)mqttTransportDidClose:(id<MQTTTransport>)mqttTransport {
-    ALDDLogVerbose(@"[MQTTSession] mqttTransport mqttTransportDidClose");
+    DDLogVerbose(@"[MQTTSession] mqttTransport mqttTransportDidClose");
     
     [self error:MQTTSessionEventConnectionClosedByBroker error:nil];
     
 }
 
 - (void)mqttTransportDidOpen:(id<MQTTTransport>)mqttTransport {
-    ALDDLogVerbose(@"[MQTTSession] mqttTransportDidOpen");
+    DDLogVerbose(@"[MQTTSession] mqttTransportDidOpen");
     
-    ALDDLogVerbose(@"[MQTTSession] sending CONNECT");
+    DDLogVerbose(@"[MQTTSession] sending CONNECT");
     
     if (!self.connectMessage) {
         (void)[self encode:[MQTTMessage connectMessageWithClientId:self.clientId
@@ -1227,7 +1227,7 @@ NSString * const MQTTSessionErrorDomain = @"MQTT";
 }
 
 - (void)mqttTransport:(id<MQTTTransport>)mqttTransport didFailWithError:(NSError *)error {
-    ALDDLogWarn(@"[MQTTSession] mqttTransport didFailWithError %@", error);
+    DDLogWarn(@"[MQTTSession] mqttTransport didFailWithError %@", error);
     
     [self connectionError:error];
 }

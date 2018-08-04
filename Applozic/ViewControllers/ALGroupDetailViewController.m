@@ -18,7 +18,7 @@
 #import "ALGroupCreationViewController.h"
 #import "ALPushAssist.h"
 #import "ALChannelUser.h"
-#import "ALMessageClientService.h"
+
 
 @interface ALGroupDetailViewController () <ALGroupInfoDelegate>
 {
@@ -43,7 +43,17 @@
 @end
 
 @implementation ALGroupDetailViewController
-
+    
+- (IBAction)back:(id)sender {
+    
+    UIViewController *  uiController = [self.navigationController popViewControllerAnimated:YES];
+    if(!uiController)
+    {
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }
+}
+    
+    
 -(void)viewDidLoad
 {
     [super viewDidLoad];
@@ -314,6 +324,20 @@
             if(indexPath.row == 0){
                 
                 [self updateGroupView];
+                
+//                NSString * storyboardName = @"PostDetails";
+//                UIStoryboard *storyboard = [UIStoryboard storyboardWithName:storyboardName bundle: nil];
+//                UIViewController * vc = [storyboard instantiateViewControllerWithIdentifier:@"RMDetailsMainViewController"];
+//                MybridgeObjective *testViewController = [[MybridgeObjective alloc] init]; // success
+//
+//                [self presentViewController:vc animated:YES completion:nil];
+                
+                //NSDictionary *dict=[self.alChannel.metadata valueForKeyPath:@"post_id"][0];
+                NSString *post_id = [self.alChannel.metadata objectForKey:@"post_id"];
+
+                [[NSNotificationCenter defaultCenter]
+                 postNotificationName:@"OpenPost"
+                 object:post_id];
                 
             }
             if(indexPath.row == 1){
@@ -665,8 +689,19 @@
             {
                 if(indexPath.row == 0)
                 {
-                    [self.memberNameLabel setFont:[UIFont boldSystemFontOfSize:18]];
-                    self.memberNameLabel.text = [NSString stringWithFormat:@"%@", self.groupName];
+                    
+                    [self.memberNameLabel setTextColor:[UIColor blueColor]];
+                    [self.memberNameLabel setFont:[UIFont fontWithName:[ALApplozicSettings getFontFace] size:15]];
+                    //NSString *testConcat = [NSString stringWithFormat:@"%@ %@", self.groupName , @" >"];
+                    self.memberNameLabel.text = [NSString stringWithFormat:@"%@ %@", self.groupName ,@" [ عرض ] "];
+                    
+                    NSMutableAttributedString *attributeString = [[NSMutableAttributedString alloc] initWithString:self.memberNameLabel.text];
+                    [attributeString addAttribute:NSUnderlineStyleAttributeName
+                                            value:[NSNumber numberWithInt:1]
+                                            range:(NSRange){0,[attributeString length]}];
+                    
+                    self.memberNameLabel.attributedText = [attributeString copy];
+
                 }
                 else if(indexPath.row==1)
                 {
@@ -736,8 +771,9 @@
     }
     else if(alContact.contactImageUrl)
     {
-        ALMessageClientService * messageClientService = [[ALMessageClientService alloc]init];
-        [messageClientService downloadImageUrlAndSet:alContact.contactImageUrl imageView:self.memberIconImageView defaultImage:@"ic_contact_picture_holo_light.png"];
+        NSURL * theUrl = [NSURL URLWithString:alContact.contactImageUrl];
+          [self.memberIconImageView sd_setImageWithURL:theUrl placeholderImage:[ALUtilityClass getImageFromFramworkBundle:@"ic_contact_picture_holo_light.png"] options:SDWebImageRefreshCached];
+        
     }
     else
     {
@@ -799,8 +835,12 @@
         UIImageView *imageView = [[UIImageView alloc] initWithImage:
                                   [ALUtilityClass getImageFromFramworkBundle:@"applozic_group_icon.png"]];
         
-        ALMessageClientService * messageClientService = [[ALMessageClientService alloc]init];
-        [messageClientService downloadImageUrlAndSet:self.alChannel.channelImageURL imageView:imageView defaultImage:nil];
+        
+        NSURL * imageUrl = [NSURL URLWithString:self.alChannel.channelImageURL];
+        if(imageUrl.path.length)
+        {
+            [imageView sd_setImageWithURL:imageUrl placeholderImage:nil options:SDWebImageRefreshCached];
+        }
         
         imageView.frame = CGRectMake((screenWidth/2)-30, 20, 60, 60);
         imageView.backgroundColor = [UIColor blackColor];
@@ -821,27 +861,30 @@
     else if(section == 1)
     {
         UILabel * memberSectionHeaderTitle = [[UILabel alloc] init];
-        memberSectionHeaderTitle.text = NSLocalizedStringWithDefaultValue(@"groupDetailsTitle", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle], @"Group Details", @"");
+        memberSectionHeaderTitle.text = NSLocalizedStringWithDefaultValue(@"groupDetailsMembers", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle], @"Group Details", @"");
         
+        [memberSectionHeaderTitle setFont:[UIFont fontWithName:[ALApplozicSettings getFontFace] size:15]];
+
         CGSize textSize = [memberSectionHeaderTitle.text sizeWithAttributes:@{NSFontAttributeName:memberSectionHeaderTitle.font}];
         
-        memberSectionHeaderTitle.frame=CGRectMake([UIScreen mainScreen].bounds.origin.x + 5,
+        memberSectionHeaderTitle.frame=CGRectMake([UIScreen mainScreen].bounds.origin.x / 2 + textSize.width + 60,
                                                   [UIScreen mainScreen].bounds.origin.y + 35,
                                                   textSize.width, textSize.height);
         
-        [memberSectionHeaderTitle setTextAlignment:NSTextAlignmentLeft];
+        [memberSectionHeaderTitle setTextAlignment:NSTextAlignmentCenter];
         [memberSectionHeaderTitle setTextColor:[UIColor colorWithWhite:0.3 alpha:0.7]];
+
         UIView *view = [[UIView alloc] initWithFrame:CGRectMake(memberSectionHeaderTitle.frame.origin.x,
                                                                 memberSectionHeaderTitle.frame.origin.y,
                                                                 memberSectionHeaderTitle.frame.size.width,
                                                                 memberSectionHeaderTitle.frame.size.height)];
         
         if ([UIApplication sharedApplication].userInterfaceLayoutDirection == UIUserInterfaceLayoutDirectionRightToLeft) {
-            [memberSectionHeaderTitle setTextAlignment:NSTextAlignmentRight];
+            [memberSectionHeaderTitle setTextAlignment:NSTextAlignmentCenter];
             view.transform = CGAffineTransformMakeScale(-1.0, 1.0);
             memberSectionHeaderTitle.transform = CGAffineTransformMakeScale(-1.0, 1.0);
         }else{
-            [memberSectionHeaderTitle setTextAlignment:NSTextAlignmentLeft];
+            [memberSectionHeaderTitle setTextAlignment:NSTextAlignmentCenter];
         }
         [view addSubview:memberSectionHeaderTitle];
         //        view.backgroundColor=[UIColor colorWithWhite:0.7 alpha:1];
@@ -958,4 +1001,7 @@
         
     }];
 }
+    
+    -(IBAction)unwindFromDetailsVC:(UIStoryboardSegue *)segue {
+    }
 @end

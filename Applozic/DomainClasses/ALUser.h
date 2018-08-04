@@ -54,7 +54,6 @@ typedef enum
 @property short authenticationTypeId;
 @property short unreadCountType;
 @property short deviceApnsType;
-@property short pushNotificationFormat;
 @property BOOL enableEncryption;
 @property NSNumber* contactType;
 @property NSMutableArray * features;

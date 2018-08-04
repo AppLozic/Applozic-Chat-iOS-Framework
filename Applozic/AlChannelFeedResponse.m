@@ -28,12 +28,9 @@
     }
     else
     {
-        NSArray *errorResponseList = [JSONString valueForKey:@"errorResponse"];
-        if (errorResponseList != nil && errorResponseList.count > 0) {
-            self.errorResponse = errorResponseList.firstObject;
-        }
         return self;
     }
+    
 }
 
 -(void) parseUserDetails:(NSMutableArray * ) userDetailJsonArray {

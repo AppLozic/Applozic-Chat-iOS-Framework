@@ -30,7 +30,14 @@
 @implementation ALMapViewController
 
 @synthesize locationManager, region;
-
+- (IBAction)back:(id)sender {
+    UIViewController *  uiController = [self.navigationController popViewControllerAnimated:YES];
+    if(!uiController)
+    {
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }
+}
+    
 - (void)viewDidLoad {
     
     [super viewDidLoad];

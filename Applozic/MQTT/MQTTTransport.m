@@ -25,15 +25,15 @@
 }
 
 - (void)open {
-    ALDDLogError(@"MQTTTransport is abstract class");
+    DDLogError(@"MQTTTransport is abstract class");
 }
 
 - (void)close {
-    ALDDLogError(@"MQTTTransport is abstract class");
+    DDLogError(@"MQTTTransport is abstract class");
 }
 
 - (BOOL)send:(NSData *)data {
-    ALDDLogError(@"MQTTTransport is abstract class");
+    DDLogError(@"MQTTTransport is abstract class");
     return FALSE;
 }
 

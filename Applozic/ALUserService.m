@@ -27,7 +27,6 @@
 #import "ALContactService.h"
 #import "ALUserDefaultsHandler.h"
 #import "ALApplozicSettings.h"
-#import "NSString+Encode.h"
 
 @implementation ALUserService
 {
@@ -43,8 +42,11 @@
     NSMutableString * repString=[[NSMutableString alloc] init];
 
     for(ALMessage* msg in messagesArr) {
+        
         if(![ALUserDefaultsHandler isServerCallDoneForUserInfoForContact:msg.contactIds]) {
-            [contactIdsArr addObject:[NSString stringWithFormat:@"&userIds=%@",[msg.contactIds urlEncodeUsingNSUTF8StringEncoding]]];
+            NSMutableString* appStr=[[NSMutableString alloc] initWithString:msg.contactIds];
+            [appStr insertString:@"&userIds=" atIndex:0];
+            [contactIdsArr addObject:appStr];
         }
     }
     
@@ -53,7 +55,8 @@
         return;
     }
     
-    for(NSString *strr in contactIdsArr){
+    
+    for(NSString* strr in contactIdsArr){
         [repString appendString:strr];
     }
     
@@ -62,7 +65,7 @@
     ALUserClientService * client = [ALUserClientService new];
     [client subProcessUserDetailServerCall:repString withCompletion:^(NSMutableArray * userDetailArray, NSError * error) {
         
-        if(error || !userDetailArray)
+        if(error)
         {
             completionMark();
             return;
@@ -479,41 +482,5 @@
     
 }
 
-
--(void)getListOfUsersWithUserName:(NSString *)userName withCompletion:(void(^)(ALAPIResponse* response, NSError * error))completion
-{
-    
-    if(!userName){
-        NSError * reponseError = [NSError errorWithDomain:@"Applozic" code:1
-                                                 userInfo:[NSDictionary dictionaryWithObject:@"Error userName is nil " forKey:NSLocalizedDescriptionKey]];
-        completion(nil,reponseError);
-        return;
-    }
-    
-    ALUserClientService * clientService = [ALUserClientService new];
-    
-    [clientService getListOfUsersWithUserName:userName withCompletion:^(ALAPIResponse *response, NSError *error) {
-      
-        if(error)
-        {
-            completion(response,error);
-            return;
-        }
-        ALContactDBService * dbServie = [ALContactDBService new];
-        if([response.status isEqualToString:@"success"]){
-            
-            NSMutableArray * array = (NSMutableArray*)response.response;
-            for(NSDictionary *userDeatils in array)
-            {
-                ALUserDetail *userDeatil = [[ALUserDetail alloc] initWithDictonary:userDeatils];
-                
-                userDeatil.unreadCount = 0;
-                [dbServie updateUserDetail:userDeatil];
-            }
-        }
-        completion(response,error);
-    }];
-    
-}
 
 @end

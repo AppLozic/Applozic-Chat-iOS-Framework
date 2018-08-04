@@ -10,9 +10,9 @@
 @implementation ALContactCell
 
 - (void)awakeFromNib {
-    [[self mUserNameLabel] setTextAlignment:NSTextAlignmentNatural];
-    [[self mMessageLabel] setTextAlignment:NSTextAlignmentNatural];
-    [[self imageNameLabel] setTextAlignment:NSTextAlignmentNatural];
+    [[self mUserNameLabel] setTextAlignment:NSTextAlignmentRight];
+    [[self mMessageLabel] setTextAlignment:NSTextAlignmentRight];
+    [[self imageNameLabel] setTextAlignment:NSTextAlignmentRight];
     [super awakeFromNib];
 }
 

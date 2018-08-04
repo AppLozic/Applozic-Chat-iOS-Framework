@@ -14,7 +14,6 @@
 @property(nonatomic) short channelType;
 @property(nonatomic,retain) NSString * startIndex;
 @property(nonatomic,retain) NSString * pageSize;
-@property(nonatomic) BOOL skipRead;
 @property(nonatomic,retain) NSNumber * endTimeStamp;
 @property(nonatomic,retain) NSNumber * startTimeStamp;
 @property(nonatomic,retain) NSString * userId;

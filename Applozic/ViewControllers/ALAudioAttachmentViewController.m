@@ -22,6 +22,15 @@
     AVAudioSession * session;
 }
 
+- (IBAction)back:(id)sender {
+    
+    UIViewController *  uiController = [self.navigationController popViewControllerAnimated:YES];
+    if(!uiController)
+    {
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }
+}
+    
 -(void)viewDidLoad
 {
     [super viewDidLoad];
@@ -133,7 +142,7 @@
     if (!recorder.recording)
     {
         [session setActive:YES error:nil];
-        [self.recordButton setTitle:@"PAUSE RECORD" forState:UIControlStateNormal];
+        [self.recordButton setTitle:@"ايقاف مؤقت للتسجيل" forState:UIControlStateNormal];
         
         // START RECORDING
         [recorder record];
@@ -143,7 +152,7 @@
     {
         // PAUSE RECORDING
         [recorder pause];
-        [self.recordButton setTitle:@"RECORD" forState:UIControlStateNormal];
+        [self.recordButton setTitle:@"تسجيل" forState:UIControlStateNormal];
     }
     
     [self subProcess];
@@ -214,7 +223,7 @@
         case AVAudioSessionInterruptionTypeEnded:
         {
             NSLog(@"AUDIO_INTERRUPTION_END");
-            [self alertDialog: @"Recording stopped !!!"];
+            [self alertDialog: @"التسجيل توقف !!!"];
             break;
         }
         default:
@@ -227,7 +236,7 @@
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Message"
                                                     message: msg
                                                    delegate: nil
-                                          cancelButtonTitle: @"OK"
+                                          cancelButtonTitle: @"موافق"
                                           otherButtonTitles: nil];
     [alert show];
 }
@@ -238,7 +247,7 @@
 
 -(void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder successfully:(BOOL)flag
 {
-    [self.recordButton setTitle:@"RECORD" forState:UIControlStateNormal];
+    [self.recordButton setTitle:@"تسجيل" forState:UIControlStateNormal];
     [self.stopButton setEnabled:NO];
     [self.playButton setEnabled:YES];
     [self.pauseButton setEnabled:YES];
@@ -246,10 +255,10 @@
 
 -(void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag
 {
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"DONE"
-                                                    message: @"FINISH PLAYING !!!"
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"تم"
+                                                    message: @"انتهاء التشغيل !!!"
                                                    delegate: nil
-                                          cancelButtonTitle: @"OK"
+                                          cancelButtonTitle: @"موافق"
                                           otherButtonTitles: nil];
     [alert show];
 }

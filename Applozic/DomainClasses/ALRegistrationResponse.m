@@ -29,8 +29,6 @@
     self.notificationSoundFileName = [registrationResponse valueForKey:@"notificationSoundFileName"];
     self.metadata = [[NSMutableDictionary  alloc] initWithDictionary: [registrationResponse valueForKey:@"metadata"]];
     self.roleType = [[registrationResponse valueForKey:@"roleType"] shortValue];
-    self.userEncryptionKey = [registrationResponse valueForKey:@"userEncryptionKey"];
-    
     return self;
 }
 

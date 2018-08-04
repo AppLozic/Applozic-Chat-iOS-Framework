@@ -81,11 +81,6 @@
 -(void)updateChannel:(NSNumber *)channelKey andNewName:(NSString *)newName andImageURL:(NSString *)imageURL orClientChannelKey:(NSString *)clientChannelKey
   isUpdatingMetaData:(BOOL)flag metadata:(NSMutableDictionary *)metaData orChildKeys:(NSMutableArray *)childKeysList orChannelUsers:(NSMutableArray *)channelUsers withCompletion:(void(^)(NSError *error))completion;
 
--(void)updateChannelMetaData:(NSNumber *)channelKey
-          orClientChannelKey:(NSString *)clientChannelKey
-                    metadata:(NSMutableDictionary *)metaData
-              withCompletion:(void(^)(NSError *error))completion;
-
 +(void)markConversationAsRead:(NSNumber *)channelKey withCompletion:(void (^)(NSString *, NSError *))completion;
 
 -(BOOL)isChannelLeft:(NSNumber*)groupID;
@@ -160,16 +155,4 @@
 -(void)createChannel:(NSString *)channelName orClientChannelKey:(NSString *)clientChannelKey
       andMembersList:(NSMutableArray *)memberArray andImageLink:(NSString *)imageLink channelType:(short)type
          andMetaData:(NSMutableDictionary *)metaData adminUser:(NSString *)adminUserId withGroupUsers : (NSMutableArray*) groupRoleUsers withCompletion:(void(^)(ALChannel *alChannel, NSError *error))completion;
-
-/**
- Returns a dictionary containing required key value pairs to turn off the notifications
- for all the group action messages.
- */
-- (NSDictionary *)metadataToTurnOffActionMessagesNotifications;
-
-/**
- Returns a dictionary containing required key value pairs to hide all the action messages
- and turn off the notifications for them.
- */
-- (NSDictionary *)metadataToHideActionMessagesAndTurnOffNotifications;
 @end

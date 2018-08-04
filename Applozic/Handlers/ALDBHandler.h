@@ -20,8 +20,6 @@
 
 @property (readonly, strong, nonatomic) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 
-@property (strong, nonatomic) NSPersistentContainer *persistentContainer;
-
 - (void)saveContext;
 
 +(ALDBHandler *) sharedInstance;

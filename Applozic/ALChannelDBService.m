@@ -734,33 +734,6 @@
     }
 }
 
--(void)updateChannelMetaData:(NSNumber *)channelKey metaData:(NSMutableDictionary *)newMetaData{
-    
-    ALDBHandler * dbHandler = [ALDBHandler sharedInstance];
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"DB_CHANNEL" inManagedObjectContext:dbHandler.managedObjectContext];
-    
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"channelKey = %@",channelKey];
-    [fetchRequest setEntity:entity];
-    [fetchRequest setPredicate:predicate];
-    
-    NSError *fetchError = nil;
-    NSArray *result = [dbHandler.managedObjectContext executeFetchRequest:fetchRequest error:&fetchError];
-    
-    if (result.count)
-    {
-        DB_CHANNEL *dbChannel = [result objectAtIndex:0];
-        if(newMetaData!=nil) {
-            dbChannel.metadata = newMetaData.description;
-        }
-        
-        [dbHandler.managedObjectContext save:nil];
-    }
-    else
-    {
-        NSLog(@"UPDATE_CHANNEL_DB : NO CHANNEL FOUND");
-    }
-}
 
 -(void) updateChannelParentKey:(NSNumber *)channelKey andWithParentKey:(NSNumber *)channelParentKey isAdding:(BOOL)flag
 {

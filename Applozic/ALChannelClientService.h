@@ -43,10 +43,6 @@
 
 +(void)updateChannel:channelKey orClientChannelKey:clientChannelKey andNewName:newName andImageURL:imageURL metadata:metaData orChildKeys:childKeysList orChannelUsers:(NSMutableArray *)channelUsers andCompletion:(void(^)(NSError *error, ALAPIResponse *response))completion;
 
-+(void)updateChannelMetaData:(NSNumber *)channelKey orClientChannelKey:(NSString *)clientChannelKey
-                    metadata:(NSMutableDictionary *)metaData
-               andCompletion:(void(^)(NSError *error, ALAPIResponse *response))completion;
-
 +(void)getChannelInformationResponse:(NSNumber *)channelKey orClientChannelKey:(NSString *)clientChannelKey withCompletion:(void(^)(NSError *error, AlChannelFeedResponse *response)) completion;
 
 

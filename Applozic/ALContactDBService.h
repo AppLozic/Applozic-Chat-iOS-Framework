@@ -27,8 +27,6 @@
 
 -(BOOL)addListOfContacts:(NSArray *)contacts;
 
--(void)addListOfContactsInBackground:(NSArray *)contacts completionHandler:(void(^)(BOOL))response;
-
 -(BOOL)addContact:(ALContact *)userContact;
 
 -(void) updateConnectedStatus: (NSString *) userId lastSeenAt:(NSNumber *) lastSeenAt  connected: (BOOL) connected;

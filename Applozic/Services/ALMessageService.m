@@ -27,7 +27,6 @@
 #include <tgmath.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 #import "ALApplozicSettings.h"
-#import <objc/runtime.h>
 
 @implementation ALMessageService 
 
@@ -36,49 +35,23 @@ static ALMessageClientService *alMsgClientService;
 +(void) processLatestMessagesGroupByContact
 {
     ALMessageClientService * almessageClientService = [[ALMessageClientService alloc] init];
-    [almessageClientService getLatestMessageGroupByContact:[ALUserDefaultsHandler getFetchConversationPageSize] startTime:[ALUserDefaultsHandler getLastMessageListTime]  withCompletion:^( ALMessageList *alMessageListResponse,NSError *error) {
+    
+    [almessageClientService getLatestMessageGroupByContact:[ALUserDefaultsHandler getFetchConversationPageSize]
+         startTime:[ALUserDefaultsHandler getLastMessageListTime]  withCompletion:^( ALMessageList *alMessageList, NSError *error) {
         
-        if(alMessageListResponse)
+        if(alMessageList)
         {
             ALMessageDBService *alMessageDBService = [[ALMessageDBService alloc] init];
-            [alMessageDBService addMessageList:alMessageListResponse.messageList];
+            [alMessageDBService addMessageList:alMessageList.messageList];
             ALContactDBService *alContactDBService = [[ALContactDBService alloc] init];
-            [alContactDBService addUserDetails:alMessageListResponse.userDetailsList];
+            [alContactDBService addUserDetails:alMessageList.userDetailsList];
             [ALUserDefaultsHandler setBoolForKey_isConversationDbSynced:YES];
             
-            [self getMessageListForUserIfLastIsHiddenMessageinMessageList:alMessageListResponse withCompletion:^(NSMutableArray * messages, NSError *error, NSMutableArray *userDetailArray) {
+            [self getMessageListForUserIfLastIsHiddenMessageinMessageList:alMessageList
+                   withCompletion:^(NSMutableArray * messages, NSError *error, NSMutableArray *userDetailArray) {
+                       
             }];
-            
             [[NSNotificationCenter defaultCenter] postNotificationName:CONVERSATION_CALL_COMPLETED object:nil userInfo:nil];
-            
-            if(alMessageListResponse.messageList.count){
-                
-                 for(ALMessage *message in [alMessageListResponse.messageList subarrayWithRange:NSMakeRange(0, MIN(6, alMessageListResponse.messageList.count))] ){
-                    
-                    if(message.groupId != nil && message.groupId != 0){
-                        
-                        MessageListRequest * messageListRequest = [[MessageListRequest alloc] init];
-                        messageListRequest.userId = nil;
-                        messageListRequest.channelKey = message.groupId;
-                        messageListRequest.skipRead = YES;
-                        
-                        [self getMessageListForUser:messageListRequest withCompletion:^(NSMutableArray *messages, NSError *error, NSMutableArray *userDetailArray) {
-
-                        }];
-                    }else{
-                        
-                        MessageListRequest * messageListRequest = [[MessageListRequest alloc] init];
-                        messageListRequest.userId = message.contactIds;
-                        messageListRequest.channelKey = nil;
-                        messageListRequest.skipRead = YES;
-                        
-                        [self getMessageListForUser:messageListRequest withCompletion:^(NSMutableArray *messages, NSError *error, NSMutableArray *userDetailArray) {
-                            
-                        }];
-                        
-                    }
-                }
-            }
         }
         else{
             NSLog(@"Message List Response Nil");
@@ -179,15 +152,7 @@ static ALMessageClientService *alMsgClientService;
                        ALContactService *contactService = [ALContactService new];
                        NSMutableArray * userNotPresentIds = [NSMutableArray new];
                       
-                       NSMutableArray  *messageArray = messages;
-                       NSMutableArray * hiddenMsgFilteredArray = [[NSMutableArray alloc] initWithArray:messageArray];
-                       
-                       for(ALMessage* msg  in hiddenMsgFilteredArray){
-                           
-                           if([msg isHiddenMessage] && ![msg isVOIPNotificationMessage])
-                           {
-                               [messageArray removeObject:msg];
-                           }
+                       for(ALMessage* msg  in messages){
                            
                            NSString* contactId = msg.to;
                            
@@ -636,7 +601,7 @@ withAttachmentAtLocation:(NSString *)attachmentLocalPath
         }
 
         NSString* FileParamConstant;
-        if(ALApplozicSettings.isS3StorageServiceEnabled){
+        if(ALApplozicSettings.isCustomStorageServiceEnabled){
             FileParamConstant = @"file";
         }else{
             FileParamConstant = @"files[]";
@@ -680,27 +645,22 @@ withAttachmentAtLocation:(NSString *)attachmentLocalPath
 
 +(void) processImageDownloadforMessage:(ALMessage *) message withdelegate:(id)delegate
 {
-    ALMessageClientService * messageClientService = [[ALMessageClientService alloc]init];
-    [messageClientService downloadImageUrl:message.fileMeta.blobKey withCompletion:^(NSString *fileURL, NSError *error) {
-        if(error)
-        {
-            NSLog(@"ERROR GETTING DOWNLOAD URL : %@", error);
-            return;
-        }
-        NSLog(@"ATTACHMENT DOWNLOAD URL : %@", fileURL);
-        
-        NSMutableURLRequest * theRequest;
-        if(ALApplozicSettings.isS3StorageServiceEnabled) {
-            theRequest = [ALRequestHandler createGETRequestWithUrlStringWithoutHeader:fileURL paramString:nil];
-        }else{
-            theRequest = [ALRequestHandler createGETRequestWithUrlString: fileURL paramString:nil];
-        }
-    
-        ALConnection * connection = [[ALConnection alloc] initWithRequest:theRequest delegate:delegate startImmediately:YES];
-        connection.keystring = message.key;
-        connection.connectionType = @"Image Downloading";
-        [[[ALConnectionQueueHandler sharedConnectionQueueHandler] getCurrentConnectionQueue] addObject:connection];
-    }];
+    NSMutableURLRequest * theRequest;
+    if(message.fileMeta.url) {
+        NSString *urlString = message.fileMeta.url;
+        theRequest = [ALRequestHandler createGETRequestWithUrlStringWithoutHeader:urlString paramString:nil];
+    } else if(ALApplozicSettings.isStorageServiceEnabled) {
+        NSString *urlString = [NSString stringWithFormat:@"%@%@%@",KBASE_FILE_URL,IMAGE_DOWNLOAD_ENDPOINT, message.fileMeta.blobKey];
+        theRequest = [ALRequestHandler createGETRequestWithUrlString:urlString paramString:nil];
+    } else {
+        NSString *urlString = [NSString stringWithFormat:@"%@/rest/ws/aws/file/%@",KBASE_FILE_URL,message.fileMeta.blobKey];
+      theRequest = [ALRequestHandler createGETRequestWithUrlString:urlString paramString:nil];
+    }
+
+    ALConnection * connection = [[ALConnection alloc] initWithRequest:theRequest delegate:delegate startImmediately:YES];
+    connection.keystring = message.key;
+    connection.connectionType = @"Image Downloading";
+    [[[ALConnectionQueueHandler sharedConnectionQueueHandler] getCurrentConnectionQueue] addObject:connection];
 }
 
 +(ALMessage*) processFileUploadSucess: (ALMessage *) message{
@@ -709,7 +669,6 @@ withAttachmentAtLocation:(NSString *)attachmentLocalPath
     DB_Message *dbMessage =  (DB_Message*)[dbService getMessageByKey:@"key" value:message.key];
     
     dbMessage.fileMetaInfo.blobKeyString = message.fileMeta.blobKey;
-    dbMessage.fileMetaInfo.thumbnailBlobKeyString = message.fileMeta.thumbnailBlobKey;
     dbMessage.fileMetaInfo.contentType = message.fileMeta.contentType;
     dbMessage.fileMetaInfo.createdAtTime = message.fileMeta.createdAtTime;
     dbMessage.fileMetaInfo.key = message.fileMeta.key;
@@ -768,20 +727,6 @@ withAttachmentAtLocation:(NSString *)attachmentLocalPath
         {
             NSLog(@"FILE_META_PRESENT : %@",msg.fileMeta );
         }
-    }
-}
-
-+(void)syncMessages{
-    
-    if([ALUserDefaultsHandler isLoggedIn])
-    {
-        [ALMessageService getLatestMessageForUser:[ALUserDefaultsHandler getDeviceKeyString] withCompletion:^(NSMutableArray *messageArray, NSError *error) {
-            
-            if(error)
-            {
-                NSLog(@"ERROR IN LATEST MSG APNs CLASS : %@",error);
-            }
-        }];
     }
 }
 
@@ -846,7 +791,7 @@ withAttachmentAtLocation:(NSString *)attachmentLocalPath
         NSError * theJsonError = nil;
         NSDictionary *theJson = [NSJSONSerialization JSONObjectWithData:connection.mData options:NSJSONReadingMutableLeaves error:&theJsonError];
 
-        if(ALApplozicSettings.isS3StorageServiceEnabled){
+        if(ALApplozicSettings.isCustomStorageServiceEnabled){
             [message.fileMeta populate:theJson];
         }else{
             NSDictionary *fileInfo = [theJson objectForKey:@"fileMeta"];

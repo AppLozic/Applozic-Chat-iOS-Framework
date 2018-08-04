@@ -12,8 +12,8 @@
 
 @interface ALShowImageViewController ()
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *shareToolBarButton;
-@property (weak, nonatomic) IBOutlet UINavigationBar *navigationBar;
-@property (weak, nonatomic) IBOutlet UIToolbar *toolBar;
+//@property (weak, nonatomic) IBOutlet UINavigationBar *navigationBar;
+//@property (weak, nonatomic) IBOutlet UIToolbar *toolBar;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *backBarButton;
 
 @end
@@ -25,6 +25,10 @@
     //@"SHARE_IMAGE"
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(backToMessageViewController) name:@"SHARE_IMAGE" object:nil];
     [self setupBarItems];
+    
+    self.navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
+    self.navigationController.navigationBar.tintColor = UIColor.whiteColor;
+    
 }
 
 -(void)setupBarItems
@@ -32,18 +36,21 @@
     self.alImageActivity = [[ALImageActivity alloc] init];
     self.alImageActivity.imageActivityDelegate = self;
     
-    [self.navigationBar setTintColor:[ALApplozicSettings getColorForNavigation]];
-    [self.navigationBar setBarTintColor:[ALApplozicSettings getColorForNavigation]];
+    [self.navigationController.navigationBar setTintColor:[ALApplozicSettings getColorForNavigation]];
+    [self.navigationController.navigationBar setBarTintColor:[ALApplozicSettings getColorForNavigation]];
     
-    [self.backBarButton setTitle:NSLocalizedStringWithDefaultValue(@"back", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle], @"Back", @"")];
-    self.navigationBar.topItem.title = NSLocalizedStringWithDefaultValue(@"imagePreview", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle], @"Image Preview", @"");
-    self.navigationBar.titleTextAttributes = @{
+//    [self.backBarButton setTitle:NSLocalizedStringWithDefaultValue(@"back", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle], @"Back", @"")];
+    self.navigationController.navigationBar.topItem.title = NSLocalizedStringWithDefaultValue(@"imagePreview", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle], @"Image Preview", @"");
+    self.navigationController.navigationBar.titleTextAttributes = @{
                                                NSForegroundColorAttributeName:[ALApplozicSettings getColorForNavigationItem]
-                                               };
-    [self.toolBar setBarTintColor:[ALApplozicSettings getColorForNavigation]];
+                                               ,
+                                               NSFontAttributeName:[UIFont fontWithName:@"DroidArabicKufi" size:18]};
+    //[self.toolBar setBarTintColor:[ALApplozicSettings getColorForNavigation]];
     [self.backBarButton setTintColor:[ALApplozicSettings getColorForNavigationItem]];
     [self.shareToolBarButton setTintColor:[ALApplozicSettings getColorForNavigationItem]];
-    [self.navigationBar addSubview:[ALUtilityClass setStatusBarStyle]];
+    //[self.navigationBar addSubview:[ALUtilityClass setStatusBarStyle]];
+    self.navigationController.navigationBar.barStyle = UIStatusBarStyleLightContent;
+    self.navigationController.navigationBar.tintColor = UIColor.whiteColor;
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -51,6 +58,8 @@
     [super viewWillAppear:animated];
     
     [self.imageView setImage:self.image];
+    
+   
 }
 
 - (void)didReceiveMemoryWarning {
@@ -59,7 +68,9 @@
 }
 
 - (IBAction)backButtonAction:(id)sender {
-    [self dismissViewControllerAnimated:YES completion:^{}];
+    //[self dismissViewControllerAnimated:YES completion:^{}];
+    [self.navigationController popViewControllerAnimated:YES];
+
 }
 
 - (IBAction)shareToolBarButton:(id)sender {

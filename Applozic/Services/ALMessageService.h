@@ -79,7 +79,7 @@ withAttachmentAtLocation:(NSString *)attachmentLocalPath
 
 +(void)addBroadcastMessageToDB:(ALMessage *)alMessage;
 +(void)addOpenGroupMessage:(ALMessage*)alMessage;
-+(void)syncMessages;
+
 
 
 @end
