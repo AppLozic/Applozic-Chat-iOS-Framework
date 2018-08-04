@@ -1896,7 +1896,7 @@
     for (UILabel * label in labelArray)
     {
         label.textColor = [ALApplozicSettings getColorForNavigationItem];
-        label.font = [UIFont fontWithName:@"DroidArabicKufi" size:11.0];
+        label.font = [UIFont fontWithName:@"Helvetica" size:11.0];
         [self resizeLabels:label];
         [view addSubview:label];
     }

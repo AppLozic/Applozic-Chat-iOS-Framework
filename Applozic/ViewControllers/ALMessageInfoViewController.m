@@ -225,7 +225,7 @@
     self.headerTitle = [[UILabel alloc] init];
     [self.headerTitle setBackgroundColor:[UIColor clearColor]];
     [self.headerTitle setTextColor:[UIColor blackColor]];
-    [self.headerTitle setFont:[UIFont fontWithName:@"DroidArabicKufi" size:15]];
+    [self.headerTitle setFont:[UIFont fontWithName:@"Helvetica" size:15]];
     [self.headerTitle setTextAlignment:NSTextAlignmentLeft];
     
     self.tickImageView = [[UIImageView alloc] init];
@@ -300,7 +300,7 @@
     CGRect subFrameImage = CGRectMake(frameImage.origin.x + 5, frameImage.origin.y + 5, frameImage.size.width - 10,  frameImage.size.height-10);
     
     UITextView *textView = [[UITextView alloc] init];
-    [textView setFont:[UIFont fontWithName:@"DroidArabicKufi" size:14]];
+    [textView setFont:[UIFont fontWithName:@"Helvetica" size:14]];
     textView.selectable = YES;
     textView.editable = NO;
     textView.scrollEnabled = NO;
@@ -322,7 +322,7 @@
         
         
         textSize  =  [ALUtilityClass getSizeForText:self.almessage.fileMeta.name maxWidth:maxWidth + 5 font:textView.font.fontName fontSize:textView.font.pointSize];
-        [textView setFont:[UIFont fontWithName:@"DroidArabicKufi" size:12]];
+        [textView setFont:[UIFont fontWithName:@"Helvetica" size:12]];
         
         
         

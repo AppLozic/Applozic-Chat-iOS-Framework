@@ -126,7 +126,7 @@
 {
     CGSize theTextSize = [ALUtilityClass getSizeForText:alMessage.message
                                                maxWidth:cellFrame.size.width - 115
-                                                   font:@"DroidArabicKufi"
+                                                   font:@"Helvetica"
                                                fontSize:CH_MESSAGE_TEXT_SIZE];
     
     CGFloat HEIGHT = theTextSize.height + 30;    

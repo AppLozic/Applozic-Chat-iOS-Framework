@@ -299,7 +299,7 @@ static CGFloat const sendTextViewCornerRadius = 15.0f;
         
         NSString *titleText = @"  Please Contact Applozic to activate chat in your app";
         UILabel *customLabel = [[UILabel alloc] initWithFrame:accessoryView.frame];
-        [customLabel setFont:[UIFont fontWithName:@"DroidArabicKufi" size:14]];
+        [customLabel setFont:[UIFont fontWithName:@"Helvetica" size:14]];
         [customLabel setText:titleText];
         [customLabel setTextColor:[UIColor blueColor]];
         
