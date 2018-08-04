@@ -940,10 +940,9 @@
                                       {
                                           self.isUserBlocked = NO;
                                           [self.label setHidden:self.isUserBlocked];
-                                        
-                                          NSString * unblokInfo = NSLocalizedStringWithDefaultValue(@"blockedSusccessFullyInfo", [ALApplozicSettings getLocalizableName],[NSBundle mainBundle], @"%@ is unblocked successfully", @"");
                                           
-                                          NSString *alertText = [NSString stringWithFormat:unblokInfo,[self.alContact getDisplayName]] ;
+                                          NSString * unblokInfo = NSLocalizedStringWithDefaultValue(@"blockedSusccessFullyInfo", [ALApplozicSettings getLocalizableName],[NSBundle mainBundle], @" is unblocked successfully", @"");
+                                          NSString *alertText = [NSString stringWithFormat:@"%@",[self.alContact getDisplayName]] ;
                                           
                                           [alertText stringByAppendingString:unblokInfo];
                                           
@@ -1813,9 +1812,6 @@
     }
     else
     {
-    }else if(alChannel.metadata !=nil && [alChannel isContextBasedChat]){
-        return self.getContextBasedGroupView.frame.size.height;
-    } else {
         return 0;
     }
 }
@@ -1827,49 +1823,6 @@
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     return self.getHeaderView;
-    ALChannelService * alChannelService = [ALChannelService new];
-    ALChannel * alChannel = [alChannelService getChannelByKey:self.channelKey];
-    if(alChannel.metadata!=nil && [alChannel isContextBasedChat]){
-        return self.getContextBasedGroupView;
-    }else{
-        return self.getHeaderView;
-    }
-}
-
--(UIView *)getContextBasedGroupView
-{
-    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 84)];
-    
-    ALChannelService * alChannelService = [ALChannelService new];
-    
-    ALChannel * alChannel = [alChannelService getChannelByKey:self.channelKey];
-    
-    // Image View ....
-    UIImageView *imageView = [[UIImageView alloc] init];
-    NSURL * url = [NSURL URLWithString: [alChannel.metadata valueForKey:@"link"]];
-    [imageView sd_setImageWithURL:url placeholderImage:nil options:SDWebImageRefreshCached];
-    
-    imageView.frame = CGRectMake(5, 5, 70, 70);
-    imageView.backgroundColor = [UIColor blackColor];
-    [view addSubview:imageView];
-    
-    
-    UILabel * priceUILabel = [[UILabel alloc] init];
-    priceUILabel.text = [alChannel.metadata valueForKey:@"price"];
-    
-    priceUILabel.frame = CGRectMake( imageView.frame.size.width+ 10, imageView.frame.origin.y,
-                                    (view.frame.size.width-imageView.frame.size.width)/2, 50);
-    
-    UILabel * titleUILabel = [[UILabel alloc] init];
-    titleUILabel.text = [alChannel.metadata valueForKey:@"title"];
-    
-    
-    titleUILabel.frame = CGRectMake(imageView.frame.size.width + 10, 58,
-                                    (view.frame.size.width-imageView.frame.size.width)-20, 50);
-    titleUILabel.numberOfLines = 1;
-    [self setLabelViews:@[titleUILabel,priceUILabel] onView:view];
-    
-    return view;
 }
 
 -(UIView *)getHeaderView
@@ -2776,11 +2729,6 @@
                     [self.label setHidden:self.isUserBlocked];
                     [self.typingLabel setHidden:self.isUserBlocked];
                     NSString * alertText = [NSString stringWithFormat:[@"%@ " stringByAppendingString:NSLocalizedStringWithDefaultValue(@"blockedSuccessfullyText", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle], @"is blocked successfully", @"")], [self.alContact getDisplayName]];
-                
-                    NSString *blockInfo = NSLocalizedStringWithDefaultValue(@"blockedSuccessfullyText", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle], @"%@ is blocked successfully", @"");
-                    
-                    NSString * alertText = [NSString stringWithFormat:blockInfo,[self.alContact getDisplayName]];
-                    
                     [ALUtilityClass showAlertMessage:alertText andTitle:NSLocalizedStringWithDefaultValue(@"userBlock", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle], @"USER BLOCK", @"")  ];
                 }
             }];
@@ -3477,7 +3425,6 @@ style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         }
         else
         {
-            self.loadEarlierAction.hidden = YES;
             NSLog(@"some error");
         }
     }];
@@ -3533,11 +3480,7 @@ style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         }
         else if (self.alChannel.type != GROUP_OF_TWO)
         {
-            if([ALApplozicSettings isChannelMembersInfoInNavigationBarEnabled]){
-                [self.label setText:[channelService stringFromChannelUserList:self.channelKey]];
-            }else{
-                [self.label setText:@""];
-            }
+            [self.label setText:[channelService stringFromChannelUserList:self.channelKey]];
         }
     }
     else if (value > 0)
@@ -3607,8 +3550,8 @@ style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
                 {
                     theTime = [theTime substringFromIndex:[@"0" length]];
                 }
-            
-                str = [str stringByAppendingString: [NSString stringWithFormat:NSLocalizedStringWithDefaultValue(@"hrsAgo", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle], @"%@ hrs ago", @""), theTime]];
+                str = [str stringByAppendingString:theTime];
+                str = [str stringByAppendingString:NSLocalizedStringWithDefaultValue(@"hrsAgo", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle], @" hrs ago", @"")];
             }
             else
             {
@@ -3617,8 +3560,9 @@ style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
                 {
                     theTime = [theTime substringFromIndex:[@"0" length]];
                 }
+                str = [str stringByAppendingString:theTime];
+                str = [str stringByAppendingString:NSLocalizedStringWithDefaultValue(@"mins", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle], @" mins ago", @"")];
                 
-                str = [str stringByAppendingString: [NSString stringWithFormat:NSLocalizedStringWithDefaultValue(@"mins", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle],@"%@ mins ago", @""), theTime]];
                 
             }
             [self.label setText:str];
@@ -3627,9 +3571,8 @@ style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
     }
     else if ([serverdate compare:yesterdaydate] == NSOrderedSame)
     {
-        NSString *str = NSLocalizedStringWithDefaultValue(@"lastSeenYesterday", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle], @"Last seen yesterday at %@", @"");
+        NSString *str = NSLocalizedStringWithDefaultValue(@"lastSeenJustNowLabelText", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle], @"Last seen yesterday ", @"");
         [format setDateFormat:@"hh:mm a"];
-        
         str = [str stringByAppendingString:[format stringFromDate:date]];
         if([str hasPrefix:@"0"])
         {
@@ -3641,7 +3584,6 @@ style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
     {
         [format setDateFormat:@"EE, MMM dd, yyy"];
         NSString *str = NSLocalizedStringWithDefaultValue(@"lastSeenLabelText", [ALApplozicSettings getLocalizableName], [NSBundle mainBundle], @"Last seen ", @"");
-        
         str = [str stringByAppendingString:[format stringFromDate:date]];
         [self.label setText:str];
     }

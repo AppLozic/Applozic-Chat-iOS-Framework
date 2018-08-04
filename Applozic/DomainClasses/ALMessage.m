@@ -36,110 +36,110 @@
     }
     @finally
     { }
-
+    
     return self;
 }
 
 -(void)parseMessage:(id) messageJson
 {
-
+    
     // key String
-
+    
     self.key =  [super getStringFromJsonValue:messageJson[@"key"]];
-
+    
     self.pairedMessageKey = [super getStringFromJsonValue:messageJson[@"pairedMessageKey"]];
-
-
+    
+    
     // device keyString
-
+    
     self.deviceKey = [self getStringFromJsonValue:messageJson[@"deviceKey"]];
-
-
+    
+    
     // su user keyString
-
+    
     self.userKey = [self getStringFromJsonValue:messageJson[@"suUserKeyString"]];
-
-
+    
+    
     // to
-
+    
     self.to = [self getStringFromJsonValue:messageJson[@"to"]];
-
-
+    
+    
     // message
-
+    
     self.message = [self getStringFromJsonValue:messageJson[@"message"]];
-
-
+    
+    
     // sent
-
+    
 //    self.sent = [self getBoolFromJsonValue:messageJson[@"sent"]];
-
-
+    
+    
     // sendToDevice
-
+    
     self.sendToDevice = [self getBoolFromJsonValue:messageJson[@"sendToDevice"]];
-
-
+    
+    
     // shared
-
+    
     self.shared = [self getBoolFromJsonValue:messageJson[@"shared"]];
-
-
+    
+    
     // createdAtTime
-
+    
     self.createdAtTime = [self getNSNumberFromJsonValue:messageJson[@"createdAtTime"]];
-
-
+    
+    
     // type
-
+    
     self.type = [self getStringFromJsonValue:messageJson[@"type"]];
-
-
+    
+    
     // source
-
+    
 //    self.source = [self getStringFromJsonValue:messageJson[@"source"]];
      self.source = [self getShortFromJsonValue:messageJson[@"source"]];
-
-
+    
+    
     // contactIds
-
+    
     self.contactIds = [self getStringFromJsonValue:messageJson[@"contactIds"]];
-
-
+    
+    
     // storeOnDevice
-
+    
     self.storeOnDevice = [self getBoolFromJsonValue:messageJson[@"storeOnDevice"]];
-
-
+    
+    
     // read
-
+    
     //self.read = [self getBoolFromJsonValue:messageJson[@"read"]];
-
+    
     //develired
     self.delivered = [self getBoolFromJsonValue:messageJson[@"delivered"]];
-
+    
     //groupId
-
+    
     self.groupId = [self getNSNumberFromJsonValue:messageJson[@"groupId"]];
-
+    
     //contentType
-
+    
     self.contentType = [self getShortFromJsonValue:messageJson[@"contentType"]];
-
+    
     //conversationID
     self.conversationId = [self getNSNumberFromJsonValue:messageJson[@"conversationId"]];
-
+    
     //status
     self.status = [self getNSNumberFromJsonValue:messageJson[@"status"]];
-
+    
     // file meta info
-
+    
      NSDictionary * fileMetaDict = messageJson[@"fileMeta"];
 
             if ([self validateJsonClass:fileMetaDict]) {
-
+                
                 ALFileMetaInfo * theFileMetaInfo = [ALFileMetaInfo new];
-
+                
                 theFileMetaInfo.blobKey = [self getStringFromJsonValue:fileMetaDict[@"blobKey"]];
                 theFileMetaInfo.contentType = [self getStringFromJsonValue:fileMetaDict[@"contentType"]];
                 theFileMetaInfo.createdAtTime = [self getNSNumberFromJsonValue:fileMetaDict[@"createdAtTime"]];
@@ -152,35 +152,35 @@
 
                 self.fileMeta = theFileMetaInfo;
             }
-
+    
     self.deleted = NO;
-
+    
     self.metadata = [[NSMutableDictionary  alloc] initWithDictionary:messageJson[@"metadata"]];
-
+    
     self.msgHidden = [self isMsgHidden];
-
+    
 }
 
 
 -(NSString *)getCreatedAtTime:(BOOL)today {
-
+    
     NSString *formattedStr = today?@"hh:mm a":@"dd MMM";
-
+    
     NSString *formattedDateStr;
-
+    
     NSDate *currentTime = [[NSDate alloc] init];
-
+    
     NSDate *msgDate = [[NSDate alloc] init];
     msgDate = [NSDate dateWithTimeIntervalSince1970:self.createdAtTime.doubleValue/1000];
     NSTimeInterval difference = [currentTime timeIntervalSinceDate:msgDate];
-
+    
     float minutes;
     if(difference <= 3600)
     {
         if(difference <= 60)
         {
             formattedDateStr = NSLocalizedStringWithDefaultValue(@"justNow", [ALApplozicSettings getLocalizableName],[NSBundle mainBundle], @"Just Now", @"");
-
+            
         }
         else
         {
@@ -203,21 +203,19 @@
     }
     
     return [formattedDateStr stringByReplacingOccurrencesOfString:@"m" withString:@"دقيقة"];
-
-    return formattedDateStr;
 }
 
 -(NSString *)getCreatedAtTimeChat:(BOOL)today {
-
+    
    // NSString *formattedStr = today?@"hh:mm a":@"dd MMM hh:mm a";
     NSString *formattedStr = @"hh:mm a";
     NSString *formattedDateStr = [ALUtilityClass formatTimestamp:[self.createdAtTime doubleValue]/1000 toFormat:formattedStr];
 
     return formattedDateStr;
-
+    
 }
 -(BOOL)isDownloadRequired{
-
+    
     //TODO:check for SD card
     return (self.fileMeta && !self.imageFilePath);
 }
@@ -250,11 +248,11 @@
 
 -(NSString*)getNotificationText
 {
-
+    
     if(self.contentType == ALMESSAGE_CONTENT_LOCATION)
     {
         return NSLocalizedStringWithDefaultValue(@"location", [ALApplozicSettings getLocalizableName],[NSBundle mainBundle], @"Location", @"");
-
+        
     }
     else if(self.contentType == ALMESSAGE_CONTENT_VCARD)
     {
@@ -277,7 +275,7 @@
     if(string == nil){
         return nil;
     }
-
+    
     NSData * data = [string dataUsingEncoding:NSUTF8StringEncoding];
 //    NSString * error;
     NSPropertyListFormat format;
@@ -302,7 +300,7 @@
     {
 //         NSLog(@"METADATA_DICTIONARY_EXCEPTION :: %@", exp.description);
     }
-
+    
     return metaDataDictionary;
 }
 
@@ -310,9 +308,9 @@
 {
     NSString *msgType = (NSString *)[self.metadata objectForKey:@"MSG_TYPE"];
     BOOL flag = [[self.metadata objectForKey:@"CALL_AUDIO_ONLY"] boolValue];
-
+    
     NSString * text = self.message;
-
+    
     if([msgType isEqualToString:@"CALL_MISSED"])
     {
         text = flag ? @"Missed Audio Call" : @"Missed Video Call";
@@ -325,14 +323,14 @@
     {
         text = @"Call Busy";
     }
-
+    
     return text;
 }
 
 -(BOOL)isMsgHidden
 {
     BOOL hide = [[self.metadata objectForKey:@"hide"] boolValue];
-
+    
     return hide;
 }
 
@@ -361,7 +359,7 @@
 -(BOOL)isReceivedMessage
 {
     return [self.type isEqualToString:IN_BOX];
-
+    
 }
 
 -(BOOL)isLocationMessage
@@ -371,37 +369,28 @@
 -(BOOL)isContactMessage
 {
     return (self.contentType ==ALMESSAGE_CONTENT_VCARD);
-
+    
 }
 -(BOOL)isDocumentMessage
 {
     return (self.contentType ==ALMESSAGE_CONTENT_ATTACHMENT) &&
     !([self.fileMeta.contentType hasPrefix:@"video"]|| [self.fileMeta.contentType hasPrefix:@"audio"] || [self.fileMeta.contentType hasPrefix:@"image"] );
-
-}
-
--(BOOL)isSilentNotification{
-
-    if( _metadata && [_metadata  valueForKey:@"show"] ){
-
-        return ([ [_metadata  valueForKey:@"show"] isEqualToString:@"false"]);
-    }
-    return NO;
+    
 }
 
 -(ALReplyType)getReplyType
 {
     switch ([self.messageReplyType intValue])
     {
-
+            
         case 1:
             return AL_A_REPLY;
             break;
-
+            
         case 2:
             return AL_REPLY_BUT_HIDDEN;
             break;
-
+            
         default:
             return AL_NOT_A_REPLY;
     }

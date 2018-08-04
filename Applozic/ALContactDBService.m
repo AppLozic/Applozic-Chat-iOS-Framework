@@ -151,23 +151,6 @@
         userContact.contactNumber = contact.contactNumber;
         userContact.contactImageUrl = contact.contactImageUrl;
         userContact.unreadCount = contact.unreadCount ? contact.unreadCount : [NSNumber numberWithInt:0];
-        if(contact.email){
-            userContact.email = contact.email;
-        }
-        if(contact.fullName){
-            userContact.fullName = contact.fullName;
-        }
-        if(contact.contactNumber){
-            userContact.contactNumber = contact.contactNumber;
-        }
-        if(contact.contactImageUrl){
-            userContact.contactImageUrl = contact.contactImageUrl;
-        }
-        
-        if(contact.unreadCount != nil && [contact.unreadCount  compare:[NSNumber numberWithInt:0]] != NSOrderedSame){
-            userContact.unreadCount = contact.unreadCount;
-        }
-    
         userContact.userStatus = contact.userStatus;
         userContact.connected = contact.connected;
         if(contact.displayName)

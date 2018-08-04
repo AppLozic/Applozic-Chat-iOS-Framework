@@ -37,12 +37,11 @@
                                    reponseCompletion(nil,[self errorWithDescription:@"No Internet connectivity"]);
                                    return;
                                }
-
-                               // Handle any other connection error
+                               //connection error
                                else if (connectionError)
                                {
                                    NSLog(@"ERROR_RESPONSE : %@ && ERROR:CODE : %ld ", connectionError.description, (long)connectionError.code);
-                                   reponseCompletion(nil, [self errorWithDescription:connectionError.localizedDescription]);
+                                   reponseCompletion(nil,[self errorWithDescription:@"Unable to connect with the server. Check your internet connection and try again"]);
                                    return;
                                }
                                

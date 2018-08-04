@@ -686,7 +686,7 @@
 +(NSString *)getCustomMessageFont
 {
     NSString * font = [[NSUserDefaults standardUserDefaults] valueForKey:CUSTOM_MSG_FONT];
-    return font ? font : @"Helvetica";
+    return font ? font : @"DroidArabicKufi";
 }
 
 +(void)setGroupInfoDisabled:(BOOL)flag
@@ -987,17 +987,6 @@
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
-+(BOOL)isGoogleCloudServiceEnabled
-{
-    return [[NSUserDefaults standardUserDefaults] boolForKey:GOOGLE_CLOUD_SERVICE_ENABLE];
-}
-
-+(void)enableGoogleCloudService:(BOOL)flag
-{
-    [[NSUserDefaults standardUserDefaults] setBool:flag forKey:GOOGLE_CLOUD_SERVICE_ENABLE];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-}
-
 +(void) setHideAttachmentsOption:(NSMutableArray*)array{
 
     [[NSUserDefaults standardUserDefaults] setObject:array forKey:HIDE_ATTACHMENT_OPTION];
@@ -1005,30 +994,10 @@
 }
 
 +(NSArray*) getHideAttachmentsOption{
+
+
     return [[NSUserDefaults standardUserDefaults] objectForKey:HIDE_ATTACHMENT_OPTION];
-}
 
-+(void) setTemplateMessages:(NSMutableDictionary*)dictionary{
-    
-    [[NSUserDefaults standardUserDefaults] setObject:dictionary forKey:TEMPLATE_MESSAGES];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-}
-
-
-+(NSMutableDictionary*) getTemplateMessages{
-    
-    return [[NSUserDefaults standardUserDefaults] objectForKey:TEMPLATE_MESSAGES];
-}
-
-+(BOOL)isTemplateMessageEnabled
-{
-    return [[NSUserDefaults standardUserDefaults] boolForKey:TEMPLATE_MESSAGE_VIEW];
-}
-
-+(void)enableTeamplateMessage:(BOOL)flag
-{
-    [[NSUserDefaults standardUserDefaults] setBool:flag forKey:TEMPLATE_MESSAGE_VIEW];
-    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 +(BOOL) isCameraOptionHidden{
@@ -1066,14 +1035,14 @@
     return ([[self getHideAttachmentsOption] containsObject:@":attachmentbutton"]);
 }
 
-+(BOOL)isS3StorageServiceEnabled
++(BOOL)isCustomStorageServiceEnabled
 {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:S3_STORAGE_SERVICE];
+    return [[NSUserDefaults standardUserDefaults] boolForKey:CUSTOM_STORAGE];
 }
 
-+(void)enableS3StorageService:(BOOL)flag
++(void)enableCustomStorageService:(BOOL)flag
 {
-    [[NSUserDefaults standardUserDefaults] setBool:flag forKey:S3_STORAGE_SERVICE];
+    [[NSUserDefaults standardUserDefaults] setBool:flag forKey:CUSTOM_STORAGE];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
@@ -1154,50 +1123,4 @@
    return [[NSUserDefaults standardUserDefaults] valueForKey:APPLOZIC_LOCALIZABLE];
 
 }
-
-+(void)setCategoryName:(NSString*)categoryName{
-    [[NSUserDefaults standardUserDefaults] setValue:categoryName forKey:AL_CATEGORY_NAME];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-    
-}
-
-+(NSString*)getCategoryName{
-    return [[NSUserDefaults standardUserDefaults] valueForKey:AL_CATEGORY_NAME];
-}
-
-+(BOOL)isDeleteConversationOptionEnabled
-{
-    return [[NSUserDefaults standardUserDefaults] boolForKey:DELETE_CONVERSATION_OPTION];
-}
-
-+(void)setDeleteConversationOption:(BOOL)flag
-{
-    [[NSUserDefaults standardUserDefaults] setBool:flag forKey:DELETE_CONVERSATION_OPTION];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-}
-
-+(BOOL)isContactSearchEnabled
-{
-    return [[NSUserDefaults standardUserDefaults] boolForKey:AL_CONTACT_SEARCH];
-}
-
-+(void)enableContactSearch:(BOOL)flag
-{
-    [[NSUserDefaults standardUserDefaults] setBool:flag forKey:AL_CONTACT_SEARCH];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-}
-
-+(BOOL)isChannelMembersInfoInNavigationBarEnabled
-{
-    return [[NSUserDefaults standardUserDefaults] boolForKey:CHANNEL_MEMBER_INFO_IN_SUBTITLE];
-}
-
-+(void)showChannelMembersInfoInNavigationBar:(BOOL)flag
-{
-    [[NSUserDefaults standardUserDefaults] setBool:flag forKey:CHANNEL_MEMBER_INFO_IN_SUBTITLE];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-}
-
-
-
 @end
