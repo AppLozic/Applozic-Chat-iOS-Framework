@@ -93,6 +93,16 @@
 #define AL_GROUP_CONVEERSATION_CLOSE @"com.applozic.userdefault.AL_GROUP_CONVEERSATION_CLOSE"
 #define DROP_IN_SHADOW_IN_NAVIGATION_BAR @"com.applozic.userdefault.DROP_IN_SHADOW_IN_NAVIGATION_BAR"
 #define APPLOZIC_LOCALIZABLE @"com.applozic.userdefault.APPLOZIC_LOCALIZABLE"
+<<<<<<< HEAD
+=======
+#define AL_CATEGORY_NAME @"com.applozic.userdefault.AL_CATEGORY_NAME"
+#define DELETE_CONVERSATION_OPTION @"com.applozic.userdefault.DELETE_CONVERSATION_OPTION"
+#define GOOGLE_CLOUD_SERVICE_ENABLE @"com.applozic.userdefault.GOOGLE_CLOUD_SERVICE_ENABLE"
+#define TEMPLATE_MESSAGES @"com.applozic.TEMPLATE_MESSAGES"
+#define TEMPLATE_MESSAGE_VIEW @"com.applozic.TEMPLATE_MESSAGE_VIEW"
+#define AL_CONTACT_SEARCH @"com.applozic.AL_CONTACT_SEARCH"
+#define CHANNEL_MEMBER_INFO_IN_SUBTITLE @"com.applozic.CHANNEL_MEMBER_INFO_IN_SUBTITLE"
+>>>>>>> upstream/master
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
@@ -394,5 +404,11 @@
 +(BOOL)isDropShadowInNavigationBarEnabled;
 +(NSString *)getLocalizableName;
 +(void)setLocalizableName:(NSString *)localizableName;
+
++(BOOL)isContactSearchEnabled;
++(void)enableContactSearch:(BOOL)flag;
+
++(BOOL)isChannelMembersInfoInNavigationBarEnabled;
++(void)showChannelMembersInfoInNavigationBar:(BOOL)flag;
 
 @end

@@ -115,10 +115,6 @@
     }else if( [ALApplozicSettings isContactsGroupEnabled] && [ALApplozicSettings getContactGroupIdList] && ![ALApplozicSettings getFilterContactsStatus]){
         [self proccessContactsGroupList];
     }else{
-        NSLog(@"isContactsGroupEnabled:%d", [ALApplozicSettings isContactsGroupEnabled] );
-        NSLog(@"isContactsGroupEnabled:%@", [ALApplozicSettings getContactGroupIdList] );
-        NSLog(@"isContactsGroupEnabled:%d", [ALApplozicSettings getFilterContactsStatus] );
-
         
         [self subProcessContactFetch];
         [self.searchBar setUserInteractionEnabled:YES];
@@ -503,12 +499,17 @@
                 {
                     ALChannel * channel = (ALChannel *)[self.filteredContactList objectAtIndex:indexPath.row];
                     newContactCell.contactPersonName.text = [channel name];
+<<<<<<< HEAD
                     [newContactCell.contactPersonImageView setImage:[UIImage imageNamed:@"applozic_group_icon.png"]];
                     NSURL * imageUrl = [NSURL URLWithString:channel.channelImageURL];
                     if(imageUrl.path.length)
                     {
                         [newContactCell.contactPersonImageView sd_setImageWithURL:imageUrl placeholderImage:nil options:SDWebImageRefreshCached];
                     }
+=======
+                    ALMessageClientService * messageClientService = [[ALMessageClientService alloc]init];
+                    [messageClientService downloadImageUrlAndSet:channel.channelImageURL imageView:newContactCell.contactPersonImageView defaultImage:@"applozic_group_icon.png"];
+>>>>>>> upstream/master
                     [nameIcon setHidden:YES];
                 }
                 else
@@ -757,6 +758,30 @@
     // Do the search...
     ALChatViewController * theVC = [self.storyboard instantiateViewControllerWithIdentifier:@"ALChatViewController"];
     theVC.contactIds = searchBar.text;
+    if (self.selectedSegment == 0 && [ALApplozicSettings isContactSearchEnabled])
+    {
+        [[self activityIndicator] startAnimating];
+        
+        if(searchBar.text){
+            ALUserService *userservice = [[ALUserService alloc] init];
+            [userservice getListOfUsersWithUserName:searchBar.text withCompletion:^(ALAPIResponse *response, NSError *error) {
+                
+                if(!error &&  [response.status isEqualToString:@"success"]){
+                    [self.filteredContactList removeAllObjects];
+                    [self.contactList removeAllObjects];
+                    [self subProcessContactFetch];
+                    
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self getSerachResult:_stopSearchText];
+                    });
+                }
+                [[self activityIndicator] stopAnimating];
+                
+            }];
+        }
+    }
+    
+    
 }
 
 #pragma mark - Search Bar Delegate Methods -
@@ -1391,6 +1416,7 @@
             if([ALApplozicSettings getFilterContactsStatus])
             {
                 [[self activityIndicator] startAnimating];
+                [ALUserDefaultsHandler setContactScrollingIsInProgress:YES];
                 [self proccessRegisteredContactsCall:YES];
             }
         }

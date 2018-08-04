@@ -1123,4 +1123,53 @@
    return [[NSUserDefaults standardUserDefaults] valueForKey:APPLOZIC_LOCALIZABLE];
 
 }
+<<<<<<< HEAD
+=======
+
++(void)setCategoryName:(NSString*)categoryName{
+    [[NSUserDefaults standardUserDefaults] setValue:categoryName forKey:AL_CATEGORY_NAME];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    
+}
+
++(NSString*)getCategoryName{
+    return [[NSUserDefaults standardUserDefaults] valueForKey:AL_CATEGORY_NAME];
+}
+
++(BOOL)isDeleteConversationOptionEnabled
+{
+    return [[NSUserDefaults standardUserDefaults] boolForKey:DELETE_CONVERSATION_OPTION];
+}
+
++(void)setDeleteConversationOption:(BOOL)flag
+{
+    [[NSUserDefaults standardUserDefaults] setBool:flag forKey:DELETE_CONVERSATION_OPTION];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
++(BOOL)isContactSearchEnabled
+{
+    return [[NSUserDefaults standardUserDefaults] boolForKey:AL_CONTACT_SEARCH];
+}
+
++(void)enableContactSearch:(BOOL)flag
+{
+    [[NSUserDefaults standardUserDefaults] setBool:flag forKey:AL_CONTACT_SEARCH];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
++(BOOL)isChannelMembersInfoInNavigationBarEnabled
+{
+    return [[NSUserDefaults standardUserDefaults] boolForKey:CHANNEL_MEMBER_INFO_IN_SUBTITLE];
+}
+
++(void)showChannelMembersInfoInNavigationBar:(BOOL)flag
+{
+    [[NSUserDefaults standardUserDefaults] setBool:flag forKey:CHANNEL_MEMBER_INFO_IN_SUBTITLE];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+
+
+>>>>>>> upstream/master
 @end

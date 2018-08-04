@@ -265,11 +265,6 @@
         
     NSString * lastSyncTime = [NSString stringWithFormat:@"%@", [ALUserDefaultsHandler getLastSyncTime]];
     
-    if(lastSyncTime == NULL)
-    {
-        lastSyncTime = @"0";
-    }
-    
     NSLog(@"LAST SYNC TIME IN CALL :  %@", lastSyncTime);
     NSString * theUrlString = [NSString stringWithFormat:@"%@/rest/ws/message/sync",KBASE_URL];
     NSString * theParamString = [NSString stringWithFormat:@"lastSyncTime=%@",lastSyncTime];

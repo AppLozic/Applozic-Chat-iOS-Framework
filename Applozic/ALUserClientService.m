@@ -39,7 +39,7 @@
         }
         else
         {
-//            NSLog(@"SEVER RESPONSE FROM JSON : %@", (NSString *)theJson);
+//            NSLog(@"SERVER RESPONSE FROM JSON : %@", (NSString *)theJson);
             NSNumber * generatedAt =  [theJson  valueForKey:@"generatedAt"];
             [ALUserDefaultsHandler setLastSeenSyncTime:generatedAt];
             ALLastSeenSyncFeed  * responseFeed =  [[ALLastSeenSyncFeed alloc] initWithJSONString:(NSString*)theJson];
@@ -70,7 +70,7 @@
         {
             if(((NSArray*)theJson).count > 0)
             {
-                NSLog(@"SEVER RESPONSE FROM JSON : %@", (NSString *)theJson);
+                NSLog(@"SERVER RESPONSE FROM JSON : %@", (NSString *)theJson);
                 ALUserDetail *userDetailObject = [[ALUserDetail alloc] initWithDictonary:[theJson objectAtIndex:0]];
                 [userDetailObject userDetail];
                 completionMark(userDetailObject);
@@ -303,25 +303,18 @@
         }
         
         NSString * JSONString = (NSString *)theJson;
-        NSLog(@"SEVER_RESPONSE_CONTACT_FETCH_WITH_LIMIT_JSON : %@", JSONString);
+        NSLog(@"SERVER_RESPONSE_CONTACT_FETCH_WITH_LIMIT_JSON : %@", JSONString);
         completion(theJson, theError);
     }];
 }
 
 -(void)subProcessUserDetailServerCall:(NSString *)paramString withCompletion:(void(^)(NSMutableArray * userDetailArray, NSError * theError))completionMark
 {
-    NSString * theUrlString = [NSString stringWithFormat:@"%@/rest/ws/user/detail",KBASE_URL];
-    NSMutableURLRequest * theRequest = [ALRequestHandler createGETRequestWithUrlString:theUrlString paramString:paramString];
     
-    [ALResponseHandler processRequest:theRequest andTag:@"USERS_DETAILS_FOR_ONLINE_CONTACT_LIMIT" WithCompletionHandler:^(id theJson, NSError *theError) {
+    @try
+    {
         
-        if (theError)
-        {
-            completionMark(nil, theError);
-            NSLog(@"ERROR_IN_USERS_DETAILS_FOR_ONLINE_CONTACT_LIMIT : %@", theError);
-            return;
-        }
-        
+<<<<<<< HEAD
         NSLog(@"SEVER_RESPONSE_FOR_ONLINE_CONTACT_LIMIT_JSON : %@", (NSString *)theJson);
         NSArray * jsonArray = [NSArray arrayWithArray:(NSArray *)theJson];
         if(jsonArray.count)
@@ -329,14 +322,51 @@
             NSMutableArray * ALLUserDetailArray = [NSMutableArray new];
             NSDictionary * JSONDictionary = (NSDictionary *)theJson;
             for (NSDictionary * theDictionary in JSONDictionary)
+=======
+        NSString * theUrlString = [NSString stringWithFormat:@"%@/rest/ws/user/detail",KBASE_URL];
+        NSMutableURLRequest * theRequest = [ALRequestHandler createGETRequestWithUrlString:theUrlString paramString:paramString];
+        
+        [ALResponseHandler processRequest:theRequest andTag:@"USERS_DETAILS_FOR_ONLINE_CONTACT_LIMIT" WithCompletionHandler:^(id theJson, NSError *theError) {
+            
+            if (theError)
+>>>>>>> upstream/master
             {
-                ALUserDetail * userDetail = [[ALUserDetail alloc] initWithDictonary:theDictionary];
-                userDetail.unreadCount = 0;
-                [ALLUserDetailArray addObject:userDetail];
+                completionMark(nil, theError);
+                NSLog(@"ERROR_IN_USERS_DETAILS_FOR_ONLINE_CONTACT_LIMIT : %@", theError);
+                return;
             }
+<<<<<<< HEAD
             completionMark(ALLUserDetailArray, theError);
         }
     }];
+=======
+            
+            NSLog(@"SERVER_RESPONSE_FOR_ONLINE_CONTACT_LIMIT_JSON : %@", (NSString *)theJson);
+            NSArray * jsonArray = [NSArray arrayWithArray:(NSArray *)theJson];
+            if(jsonArray.count)
+            {
+                NSMutableArray * ALLUserDetailArray = [NSMutableArray new];
+                NSDictionary * JSONDictionary = (NSDictionary *)theJson;
+                for (NSDictionary * theDictionary in JSONDictionary)
+                {
+                    ALUserDetail * userDetail = [[ALUserDetail alloc] initWithDictonary:theDictionary];
+                    userDetail.unreadCount = 0;
+                    [ALLUserDetailArray addObject:userDetail];
+                }
+                completionMark(ALLUserDetailArray, theError);
+            }else{
+                completionMark(nil, theError);
+            }
+        }];
+        
+    }
+    @catch(NSException * exp)
+    {
+        NSLog(@"EXCEPTION : UserDetail :: %@",exp.description);
+
+    }
+    
+>>>>>>> upstream/master
 }
 
 //========================================================================================================================
@@ -415,11 +445,11 @@
     
     [ALResponseHandler processRequest:theRequest andTag:@"USERS_DETAILS_FOR_ONLINE_CONTACT_LIMIT_POST" WithCompletionHandler:^(id theJson, NSError *theError) {
         
-        NSLog(@"SEVER_RESPONSE_POST_CONTACT : %@", (NSString *)theJson);
+        NSLog(@"SERVER_RESPONSE_POST_CONTACT : %@", (NSString *)theJson);
         if (theError)
         {
             completionMark(nil, theError);
-            NSLog(@"ERROR_SEVER_RESPONSE_POST_CONTACT : %@", theError);
+            NSLog(@"ERROR_SERVER_RESPONSE_POST_CONTACT : %@", theError);
             return;
         }
         
@@ -471,9 +501,8 @@
     
 }
 
--(void) updatePassword:(NSString*)oldPassword withNewPassword :(NSString *) newPassword withCompletion:(void(^)(id theJson, NSError *theError))completion
-{
-    
+-(void)updatePassword:(NSString*)oldPassword withNewPassword :(NSString *) newPassword  withCompletion:(void (^)(ALAPIResponse *apiResponse, NSError *error))completion{
+
     NSString * theUrlString = [NSString stringWithFormat:@"%@/rest/ws/user/update/password", KBASE_URL];
     NSString * theParamString = [NSString stringWithFormat:@"oldPassword=%@&newPassword=%@", oldPassword,
                                  newPassword];
@@ -481,13 +510,39 @@
     NSMutableURLRequest * theRequest = [ALRequestHandler createGETRequestWithUrlString:theUrlString paramString:theParamString];
     
     [ALResponseHandler processRequest:theRequest andTag:@"UPDATE_USER_PASSWORD" WithCompletionHandler:^(id theJson, NSError *theError) {
-        
-        completion(theJson, theError);
-        
+        ALAPIResponse *apiResponse = nil;
+        if(!theError){
+            apiResponse = [[ALAPIResponse alloc] initWithJSONString:(NSString *)theJson];
+        }
+        completion(apiResponse, theError);
+
     }];
     
-    
 }
+
+-(void)getListOfUsersWithUserName:(NSString *)userName withCompletion:(void(^)(ALAPIResponse* response, NSError * error))completion
+{
+    NSString * theUrlString = [NSString stringWithFormat:@"%@/rest/ws/user/search/contact",KBASE_URL];
+    
+    NSString * theParamString = [NSString stringWithFormat:@"name=%@", [userName urlEncodeUsingNSUTF8StringEncoding]];
+
+    NSMutableURLRequest * theRequest = [ALRequestHandler createGETRequestWithUrlString:theUrlString paramString:theParamString];
+    [ALResponseHandler processRequest:theRequest andTag:@"FETCH_LIST_OF_USERS_WITH_NAME" WithCompletionHandler:^(id theJson, NSError * theError) {
+        
+        if (theError)
+        {
+            completion(nil, theError);
+            NSLog(@"Error in list of users api  call : %@", theError);
+            return;
+        }
+        
+        NSLog(@"RESPONSE_FETCH_LIST_OF_USERS_WITH_NAME_JSON : %@",(NSString *)theJson);
+        
+        ALAPIResponse * aLAPIResponse = [[ALAPIResponse alloc] initWithJSONString:(NSString *)theJson];
+        completion(aLAPIResponse, theError);
+    }];
+}
+
 
 
 

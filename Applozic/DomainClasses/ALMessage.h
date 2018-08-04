@@ -133,6 +133,7 @@ typedef enum {
 -(BOOL)isLocationMessage;
 -(BOOL)isContactMessage;
 -(BOOL)isDocumentMessage;
+-(BOOL)isSilentNotification;
 
 
 @property (nonatomic,assign) BOOL deleted;

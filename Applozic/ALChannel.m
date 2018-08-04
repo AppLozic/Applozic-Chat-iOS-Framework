@@ -155,4 +155,23 @@
     return NO;
 }
 
+<<<<<<< HEAD
+=======
+-(BOOL)isPartOfCategory:(NSString*)category{
+    
+    if( _metadata && [_metadata  valueForKey:CATEGORY] ){
+        return ([ [_metadata  valueForKey:CATEGORY] isEqualToString:category]);
+    }
+    return NO;
+}
+
+-(BOOL)isContextBasedChat{
+    
+    if(_metadata && [_metadata  valueForKey:AL_CONTEXT_BASED_CHAT] ){
+        return ([ [_metadata  valueForKey:AL_CONTEXT_BASED_CHAT] isEqualToString:@"true"]);
+    }
+    return NO;
+}
+
+>>>>>>> upstream/master
 @end
