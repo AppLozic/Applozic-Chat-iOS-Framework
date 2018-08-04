@@ -686,7 +686,7 @@
 +(NSString *)getCustomMessageFont
 {
     NSString * font = [[NSUserDefaults standardUserDefaults] valueForKey:CUSTOM_MSG_FONT];
-    return font ? font : @"DroidArabicKufi";
+    return font ? font : @"Helvetica";
 }
 
 +(void)setGroupInfoDisabled:(BOOL)flag
@@ -987,6 +987,17 @@
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
++(BOOL)isGoogleCloudServiceEnabled
+{
+    return [[NSUserDefaults standardUserDefaults] boolForKey:GOOGLE_CLOUD_SERVICE_ENABLE];
+}
+
++(void)enableGoogleCloudService:(BOOL)flag
+{
+    [[NSUserDefaults standardUserDefaults] setBool:flag forKey:GOOGLE_CLOUD_SERVICE_ENABLE];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
 +(void) setHideAttachmentsOption:(NSMutableArray*)array{
 
     [[NSUserDefaults standardUserDefaults] setObject:array forKey:HIDE_ATTACHMENT_OPTION];
@@ -994,10 +1005,30 @@
 }
 
 +(NSArray*) getHideAttachmentsOption{
-
-
     return [[NSUserDefaults standardUserDefaults] objectForKey:HIDE_ATTACHMENT_OPTION];
+}
 
++(void) setTemplateMessages:(NSMutableDictionary*)dictionary{
+    
+    [[NSUserDefaults standardUserDefaults] setObject:dictionary forKey:TEMPLATE_MESSAGES];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+
++(NSMutableDictionary*) getTemplateMessages{
+    
+    return [[NSUserDefaults standardUserDefaults] objectForKey:TEMPLATE_MESSAGES];
+}
+
++(BOOL)isTemplateMessageEnabled
+{
+    return [[NSUserDefaults standardUserDefaults] boolForKey:TEMPLATE_MESSAGE_VIEW];
+}
+
++(void)enableTeamplateMessage:(BOOL)flag
+{
+    [[NSUserDefaults standardUserDefaults] setBool:flag forKey:TEMPLATE_MESSAGE_VIEW];
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 +(BOOL) isCameraOptionHidden{
@@ -1035,14 +1066,14 @@
     return ([[self getHideAttachmentsOption] containsObject:@":attachmentbutton"]);
 }
 
-+(BOOL)isCustomStorageServiceEnabled
++(BOOL)isS3StorageServiceEnabled
 {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:CUSTOM_STORAGE];
+    return [[NSUserDefaults standardUserDefaults] boolForKey:S3_STORAGE_SERVICE];
 }
 
-+(void)enableCustomStorageService:(BOOL)flag
++(void)enableS3StorageService:(BOOL)flag
 {
-    [[NSUserDefaults standardUserDefaults] setBool:flag forKey:CUSTOM_STORAGE];
+    [[NSUserDefaults standardUserDefaults] setBool:flag forKey:S3_STORAGE_SERVICE];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
@@ -1123,8 +1154,6 @@
    return [[NSUserDefaults standardUserDefaults] valueForKey:APPLOZIC_LOCALIZABLE];
 
 }
-<<<<<<< HEAD
-=======
 
 +(void)setCategoryName:(NSString*)categoryName{
     [[NSUserDefaults standardUserDefaults] setValue:categoryName forKey:AL_CATEGORY_NAME];
@@ -1171,5 +1200,4 @@
 
 
 
->>>>>>> upstream/master
 @end
